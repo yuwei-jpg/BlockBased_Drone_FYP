@@ -27,7 +27,7 @@ Blockly.defineBlocksWithJsonArray([
     "previousStatement": null,
     "nextStatement": null,
     "init": function() {
-      // 初始化默认连接
+      // Initialize the default connection
       ['RADIUS_INPUT', 'SPEED_INPUT', 'ANGLE_INPUT'].forEach(input => {
         const child = Blockly.serialization.blocks.append(
           {
@@ -57,7 +57,7 @@ Blockly.defineBlocksWithJsonArray([
   }
 ]);
 
-// 设置默认值方法
+// Set the default value
 Blockly.Blocks['Spiral_Upward'].getDefaultValue = function(inputName) {
   return {
     'RADIUS_INPUT': 5.0,
@@ -66,7 +66,7 @@ Blockly.Blocks['Spiral_Upward'].getDefaultValue = function(inputName) {
   }[inputName] || 0;
 };
 
-// 连接保护逻辑
+// Connection protection logic
 Blockly.Blocks['Spiral_Upward'].onchange = function(event) {
   if (event instanceof Blockly.Events.BlockMove) {
     ['RADIUS_INPUT', 'SPEED_INPUT', 'ANGLE_INPUT'].forEach(input => {
