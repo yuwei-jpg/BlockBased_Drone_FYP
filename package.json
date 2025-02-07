@@ -1,0 +1,14 @@
+{
+  "name": "FYP_Python",
+  "version": "1.0.0",
+  "dependencies": {
+    "blockly": "^10.0.2",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "marked": "^15.0.0"
+  },
+  "devDependencies": {
+    "rollup": "^4.24.0",
+    "typescript": "^5.6.3"
+  }
+}

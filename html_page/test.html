@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jMAVSim WebAssembly</title>
+    <script src="classes.js"></script> <!-- TeaVM 运行时 -->
+    <script>
+        const Module = {
+            onRuntimeInitialized: function () {
+                // 在这里调用 jMAVSim 的初始化函数
+                console.log("jMAVSim is initialized");
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>jMAVSim in WebAssembly</h1>
+    <button id="generateCodeButton">Generate Code</button>
+
+    <div id="simulatorContainer" style="display: none;">
+        <iframe id="simulatorIframe" src="" style="width: 100%; height: 500px; border: none;"></iframe>
+    </div>
+
+    <script>
+        document.getElementById('generateCodeButton').onclick = function() {
+            // 设置 iframe 的 src 属性为 jMAVSim 的 URL
+            document.getElementById('simulatorIframe').src = "http://localhost:4560"; // 替换为实际的 jMAVSim URL
+            document.getElementById('simulatorContainer').style.display = 'block'; // 显示 iframe
+        };
+    </script>
+</body>
+</html>
+

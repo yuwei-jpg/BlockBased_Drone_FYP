@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Block-Based Programming On Drone</title>
+    <link rel="stylesheet" href="toolbox_style.css">
+<!--    <script src="https://unpkg.com/@blockly/dev-tools"></script>-->
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/msg/en.js"></script>
+    <script src="../blockly.min.js"></script>
+    <script src="../blockly_compressed.js"></script>
+    <script src="../blocks_compressed.js"></script>
+    <script src="../javascript_compressed.js"></script>
+    <script src="../en.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script src="../scripts/start_blocks.js"></script>
+    <script src="../scripts/end_blocks.js"></script>
+    <script src="../scripts/direction.js"></script>
+    <script src="../scripts/angle.js" ></script>
+    <script src="../scripts/position.js" ></script>
+    <script src="../scripts/offboard.js" ></script>
+    <script src="../scripts/take_off.js" ></script>
+    <script src="../scripts/core_logic.js" ></script>
+    <script src="../scripts/spiral_ascend.js" ></script>
+    <script src="../scripts/main.js"></script>
+    <script src="../scripts/send.js"></script>
+    <script src="../scripts/server.js"></script>
+    <script src="../scripts/setPositionSpeed.js"></script>
+
+
+<!--    <link rel="stylesheet" href="toolbox_style.css" />-->
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #C4BAB1; /* Morandi background */
+        }
+
+
+        h1 {
+            margin: 10px;
+            padding: 20px 20px;
+            background-color: #C4BAB1; /* Morandi color for header background */
+            color: #333; /* Darker text for contrast */
+            font-size: 32px;
+            text-align: center;
+            position:relative;
+            /*border-bottom: 1px solid #e0ddd9;*/
+        }
+
+        .tab {
+            /*margin-top:20px;*/
+            display: flex;
+            background-color: #C4BAB1; /* Neutral Morandi color */
+            border-bottom: 2px solid #EFF0EA;
+            align-items: center; /* Align items vertically */
+            /*gap: 10px;  !* 按钮之间的间距 *!*/
+            /*width: fit-content; !* 容器宽度适应内容 *!*/
+        }
+
+        .tab button {
+            flex: none; /* Avoid stretching */
+            padding: 10px 20px; /* Adjust padding for balanced look */
+            background-color: #eae7dc; /* Light Morandi background */
+            color: #333;
+            border: none;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            margin-right: 5px; /* Add spacing between buttons */
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .tab button:hover {
+            background-color: #faf9f6;
+        }
+
+        .tab button.active {
+            background-color: #C4BAB1; /* Highlighted tab color */
+            font-weight: bold;
+            /*border-bottom: 2px solid #EFF0EA;*/
+        }
+
+         /* Tab content container */
+        .tabcontent {
+            display: none;
+            /*padding: 10px;*/
+            height: calc(100vh - 50px);
+            width: 100%;
+            background-color: #fdfdfd;
+        }
+
+        .tabcontent.active {
+        display: block;
+        }
+
+        #Playground {
+            /*display: block; !* Playground is shown by default *!*/
+            /*padding: 0;*/
+            height: calc(100vh - 50px); /* 减去标签页的高度 */
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #readmeContent {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+         #blocklyDiv {
+            /*height: 750px;*/
+            /*width: 100%;*/
+             background-color: #faf9f6; /* Background for Blockly */
+             position: absolute;
+             top: 0;
+             left: 0;
+             right: 0;
+             bottom: 0;
+             width: 100% !important; /* 覆盖内联样式 */
+             height: 100% !important; /* 覆盖内联样式 */
+        }
+         .tab {
+            position: relative;
+            z-index: 1;
+             height: 39px; /* 标签页高度 */
+            left: 0; /* Align with the page edge */
+
+
+        }
+
+
+        /* Toolbox and Playground integration */
+        #toolbox {
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
+        #modalContent {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+            max-height: 80vh;
+            max-width: 80vw;
+            z-index: 1000;
+        }
+        .notification {
+
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 4px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification.info {
+
+
+            background-color: #2196F3;
+        }
+
+       .notification.success {
+
+           background-color: #4CAF50;
+       }
+        .notification.error {
+       background-color: #F44336;
+       }
+
+       @keyframes slideIn {
+       from {
+        transform: translateX(100%);
+        opacity: 0;
+         }
+           to {
+        transform: translateX(0);
+        opacity: 1;
+         }
+       }
+
+       /*.page-header {*/
+       /*    background-color: #C4BAB1;*/
+       /*    padding: 20px 0;*/
+       /*    position: relative;*/
+       /*}*/
+
+       .action-buttons {
+           position: absolute;
+           right: 20px;
+           top: 20px;
+           display: flex;
+           gap: 6px;
+           flex-direction: column;
+       }
+
+       .action-btn {
+           padding: 6px 16px;
+           background-color: #E6E2DD;
+           border: none;
+           border-radius: 2px;
+           color: #333;
+           font-size: 14px;
+           cursor: pointer;
+           transition: all 0.3s ease;
+           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+           /*width: 120px;*/
+       }
+
+       .action-btn:hover {
+           background-color: #D4CEC7;
+           transform: translateY(-2px);
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+       }
+
+       .action-btn:active {
+           transform: translateY(0);
+           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+       }
+
+        #simulatorContainer {
+            width: 40%;
+            height: 100%;
+            border-left: 1px solid #ddd;
+        }
+
+        #simulatorIframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Dropdown container */
+        .dropdown {
+            position: absolute; /* 或者使用 absolute */
+            top: 10px; /* 距离顶部的距离 */
+            right: 10px; /* 距离右侧的距离 */
+            z-index: 999; /* 确保在其他元素之上 */
+        }
+
+        /* Dropdown button */
+        .dropbtn {
+            background-color: #C4BAB1; /* 绿色背景 */
+            color: white; /* 白色文字 */
+            padding: 10px; /* 内边距 */
+            font-size: 16px; /* 字体大小 */
+            border: none; /* 无边框 */
+            cursor: pointer; /* 鼠标指针 */
+        }
+
+        /* Dropdown content (hidden by default) */
+        .dropdown-content {
+            display: none; /* 默认隐藏 */
+            position: absolute; /* 绝对定位 */
+            background-color: #f9f9f9; /* 背景色 */
+            min-width: 160px; /* 最小宽度 */
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); /* 阴影效果 */
+            z-index: 1; /* 确保在其他元素之上 */
+        }
+
+        /* Links inside the dropdown */
+        .dropdown-content a {
+            color: black; /* 文字颜色 */
+            padding: 12px 16px; /* 内边距 */
+            text-decoration: none; /* 无下划线 */
+            display: block; /* 块级元素 */
+        }
+
+        /* Show the dropdown content on hover */
+        .dropdown:hover .dropdown-content {
+            display: block; /* 显示下拉内容 */
+        }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content a:hover {
+            background-color: #f1f1f1; /* 悬停时的背景色 */
+        }
+
+
+    </style>
+
+</head>
+
+  <body onload ="work()">
+
+    <header class="page-header">
+        <h1 class="main-title">Block-Based Programming On Drone</h1>
+        <div class="dropdown">
+            <button class="dropbtn">Blockly Actions ▼</button>
+            <div class="dropdown-content">
+                <a href="#" class="action-btn" onclick="generateCode()">Generate Code</a>
+                <a href="#" class="action-btn" onclick="saveBlocksToLocalStorage()">Save Blocks</a>
+<!--                <a href="#" class="action-btn" onclick="clearSavedBlocks()">Delete Blocks</a>-->
+                <a href="#" class="action-btn" onclick="runCode()">Run Simulator</a>
+            </div>
+        </div>
+        <nav class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'Playground')">Playground</button>
+            <button class="tablinks" onclick="openTab(event, 'Readme')">README</button>
+        </nav>
+    </header>
+
+     <div id="Playground" class="tabcontent" style="display: flex; height: calc(100vh - 50px);">
+         <div id="blocklyDiv" style="flex: 1;"></div>
+     </div>
+
+     <div id="Readme" class="tabcontent">
+         <div id="readmeContent">Loading README...</div>
+     </div>
+
+     <!-- Modal Box -->
+     <div id="codeModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+         background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1000;">
+         <h3>Generated Python Code</h3>
+         <pre id="modalContent" style="font-family: monospace; white-space: pre-wrap; background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow: auto; max-height: 500px;max-width: 500px;"></pre>
+         <button class="action-btn" onclick="closeModal()" style="margin-top: 10px; padding: 5px 10px; background-color: #ddd; border: none; border-radius: 3px;">Close &#x274C;</button>
+         <button class="action-btn" onclick="copyCode()" style="margin-top: 10px; margin-left: 10px; padding: 5px 10px; background-color: #ddd; border: none; border-radius: 3px;">Copy &#x1F4CB;</button>
+    </div>
+
+    <!-- Modal Box Background -->
+    <div id="modalBackdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 999;" onclick="closeModal()"></div>
+
+    <!--Toolbox Definition -->
+     <xml id="toolbox" style="display: none">
+         <category name="Example" categorystyle="Example"></category>
+         <category name="Core" categorystyle="core">
+             <category name="Control" categorystyle="Control">
+                 <block type="controls_if"></block>
+                 <block type="repeat_while"></block>
+                 <block type="check_altitude"></block>
+             </category>
+             <category name="Logic" categorystyle="Logic">
+                 <block type="logic_compare"></block>
+                 <block type="logic_operation"></block>
+                 <block type="logic_boolean"></block>
+             </category>
+         </category>
+
+         <category name="Action" categorystyle="Action">
+             <block type="start" ></block>
+             <block type="takeoff"></block>
+             <block type="takeoff2"></block>
+             <block type="hold"></block>
+             <block type="orbit"></block>
+             <block type="go_to_location"></block>
+             <block type="setCurrentSpeed"></block>
+             <block type="setMaxSpeed"></block>
+             <block type="returnToLaunchAltitude"></block>
+             <block type="returnToLaunch"></block>
+             <block type="sleep"></block>
+             <block type="end" ></block>
+         </category>
+
+          <category name="Position" categorystyle="Position">
+              <block type="offboard" ></block>
+              <block type="position"></block>
+              <block type="position2"></block>
+              <block type="position3"></block>
+              <block type="attitude"></block>
+              <block type="attitude_rate"></block>
+              <block type="acceleration"></block>
+              <block type="position3_acc"></block>
+              <block type="offend" ></block>
+         </category>
+
+         <category name="Movement" categorystyle="Movement">
+             <block type="Spiral_Upward" ></block>
+         </category>
+
+         <category
+                 name="Variables"
+                 categorystyle="variable_category"
+                 custom="VARIABLE">
+         </category>
+
+         <category name="Math" categorystyle="math_category">
+             <block type="math_number" gap="32">
+                 <field name="NUM">123</field>
+             </block>
+             <block type="math_single">
+                 <value name="NUM">
+                    <shadow type="math_number">
+                       <field name="NUM">9</field>
+                    </shadow>
+                 </value>
+             </block>
+             <block type="math_trig">
+                 <value name="NUM">
+                    <shadow type="math_number">
+                      <field name="NUM">45</field>
+                    </shadow>
+                 </value>
+             </block>
+             <block type="math_random_int">
+                 <value name="FROM">
+                   <shadow type="math_number">
+                       <field name="NUM">1</field>
+                   </shadow>
+                 </value>
+                 <value name="TO">
+                   <shadow type="math_number">
+                     <field name="NUM">100</field>
+                   </shadow>
+                 </value>
+             </block>
+         </category>
+     </xml>
+     <script type="module" src="../gen_python_scripts/start_arm.js"></script>
+     <script src="../scripts/send.js" defer></script>
+   </body>
+</html>
