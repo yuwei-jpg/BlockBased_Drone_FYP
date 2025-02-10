@@ -27,6 +27,7 @@
     <script src="../action_scripts/take_off.js" ></script>
     <script src="../scripts/core_logic.js" ></script>
     <script src="../movement_scripts/spiral_ascend.js" ></script>
+    <script src="../movement_scripts/zigzag_flight.js" ></script>
     <script src="../main_scripts/main.js"></script>
     <script src="../main_scripts/send.js"></script>
     <script src="../main_scripts/server.js"></script>
@@ -274,7 +275,7 @@
             position: absolute; /* 绝对定位 */
             background-color: #f9f9f9; /* 背景色 */
             min-width: 160px; /* 最小宽度 */
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); /* 阴影效果 */
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2); /* 阴影效果 */
             z-index: 1; /* 确保在其他元素之上 */
         }
 
@@ -385,6 +386,7 @@
 
          <category name="Movement" categorystyle="Movement">
              <block type="Spiral_Upward" ></block>
+             <block type="Zigzag" ></block>
          </category>
 
          <category
@@ -425,7 +427,6 @@
              </block>
          </category>
      </xml>
-     <script type="module" src="../gen_python_scripts/start_arm.js"></script>
      <script src="../main_scripts/send.js" defer></script>
    </body>
 </html>

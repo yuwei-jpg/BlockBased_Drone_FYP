@@ -582,6 +582,23 @@ await drone.action.do_orbit(${radius2},${speed}, OrbitYawBehavior.HOLD_INITIAL_H
 
              return `await spiral_ascend(drone, 50, ${radius}, ${speed}, ${angle_speed})`
          }
+
+          module.pythonGenerator.forBlock['Zigzag'] = function (block){
+             const getValue2 = (inputName) => {
+                 const childBlock2 = block.getInput(inputName).connection.targetBlock();
+                 if (!childBlock2 || childBlock2.type !== 'child_block') {
+                     throw new Error(`Missing required ${inputName} child block`);
+                 }
+                 return module.pythonGenerator.valueToCode(childBlock2, 'VALUE', module.pythonGenerator.ORDER_ATOMIC)||
+                     childBlock2.getFieldValue("VALUE")||'0';
+             };
+
+             const amplitude = getValue2('AMPLITUDE_INPUT');
+             const speed = getValue2('SPEED_INPUT');
+
+             return `await zigzag_flight(drone, 50, ${amplitude}, ${speed})`
+         }
+
          // Iterate over all top-level blocks and recursively generate the complete code
         // const code = await module.pythonGenerator.workspaceToCode(workspace);
         const generateBlockCode = (block) => {
