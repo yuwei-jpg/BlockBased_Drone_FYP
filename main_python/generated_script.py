@@ -12,9 +12,10 @@ import asyncio
 async def run():
     """ Does Off-board control using position NED coordinates. """
     drone = System()
-    await drone.connect(system_address="udp://:14540")
-
+    await drone.connect() # system_address="udp://:14540"
+    # await drone.connect(system_address="tcp://127.0.0.1:5760")
     print("Waiting for drone to connect...")
+
     async for state in drone.core.connection_state():
         if state.is_connected:
             print(f"-- Connected to drone!")
