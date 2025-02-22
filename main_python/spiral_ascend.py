@@ -26,7 +26,6 @@ async def spiral_ascend(drone, total_time_steps, radius, speed, angle_speed):
 
         # Update Location
         await drone.offboard.set_position_ned(PositionNedYaw(north_position, east_position, -z_position, yaw_angle))
-
         await asyncio.sleep(0.05)
 
         # Update Speed

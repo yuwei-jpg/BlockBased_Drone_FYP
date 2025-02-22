@@ -11,11 +11,12 @@ THRUST_AMPLITUDE = 0.15  # 振荡幅度
 
 async def roller_coaster(drone, duration, rotation_speed, altitude):
     """
-    实现无人机连续360度横滚和俯仰耦合运动（三维空间8字运动）
-    :param drone: 无人机实例
-    :param duration: 总持续时间（秒）
-    :param rotation_speed: 旋转速度（度/秒）
-    :param altitude: 飞行高度（米）
+    Achieve continuous 360-degree roll and pitch coupling motion of the drone
+
+    drone: 无人机实例
+    duration: 总持续时间（秒）
+    rotation_speed: 旋转速度（度/秒）
+    altitude: 飞行高度（米）
     """
     start_time = time.time()
     phase_shift = math.pi / 2  # 横滚和俯仰的相位差
