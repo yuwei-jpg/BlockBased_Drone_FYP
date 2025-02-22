@@ -1,11 +1,7 @@
 from mavsdk import System
-from mavsdk.action import OrbitYawBehavior
 from mavsdk.offboard import VelocityNedYaw, VelocityBodyYawspeed, Attitude, AccelerationNed
-from mavsdk.offboard import (OffboardError, PositionNedYaw)
+from mavsdk.offboard import (PositionNedYaw)
 
-from main_python.roller_coaster import roller_coaster
-from main_python.spiral_ascend import spiral_ascend
-from main_python.zigzag_flight import zigzag_flight
 import asyncio
 
 
