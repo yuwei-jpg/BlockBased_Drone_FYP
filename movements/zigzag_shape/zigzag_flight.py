@@ -1,6 +1,3 @@
-import math
-import time
-
 from mavsdk.offboard import PositionNedYaw, VelocityBodyYawspeed
 import asyncio
 
