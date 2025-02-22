@@ -11,6 +11,7 @@ def get_current_waypoint(waypoints, time):
 
 
 async def run():
+    # 模式码对应的描述
     mode_descriptions = {
         0: "On the ground",
         10: "Initial climbing state",
@@ -58,8 +59,8 @@ async def run():
 
     waypoints = []
 
-    # read the csv file
-    csv_file = "z_trajectory.csv"
+    # read csv data
+    csv_file = "roller_coaster_trajectory.csv"
     with open(csv_file, newline="") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -75,7 +76,7 @@ async def run():
                               float(row["az"]),
                               int(row["mode"])))
 
-    print("-- Executing Z trajectory")
+    print("-- Executing Roller Coaster trajectory")
     total_duration = waypoints[-1][0]
     t = 0
     last_mode = 0
@@ -102,7 +103,7 @@ async def run():
         await asyncio.sleep(time_step)
         t += time_step
 
-    print("-- Z trajectory completed")
+    print("-- Roller Coaster trajectory completed")
 
     print("-- Landing")
     await drone.action.land()
