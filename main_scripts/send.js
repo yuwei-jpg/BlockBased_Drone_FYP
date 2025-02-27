@@ -319,7 +319,7 @@ async function generateCode(event) {
                     return `# ERROR: Unknown loop mode\n`;
                 }
             } else {
-                if (mode === 'WHILE'){
+                if (mode === 'WHILE') {
                     return `while ${condition}:\n    pass\n`;
                 } else if (mode === 'UNTIL') {
                     return `while not ${condition}:\n    pass\n`;
@@ -376,17 +376,17 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
 
         // Generators for the Variables class
 
-        module.pythonGenerator.forBlock['variables_get'] = function(block) {
+        module.pythonGenerator.forBlock['variables_get'] = function (block) {
             // Use the original variable name directly
-              const varId = block.getFieldValue('VAR');
+            const varId = block.getFieldValue('VAR');
             // Get the variable instance
-              const variable = block.workspace.getVariableById(varId);
+            const variable = block.workspace.getVariableById(varId);
             // Use the actual name of variable
-              const varName = variable ? variable.name : varId;
-              return [varName, module.pythonGenerator.ORDER_ATOMIC];
+            const varName = variable ? variable.name : varId;
+            return [varName, module.pythonGenerator.ORDER_ATOMIC];
         };
 
-        module.pythonGenerator.forBlock['variables_set'] = function(block) {
+        module.pythonGenerator.forBlock['variables_set'] = function (block) {
             const argument0 = module.pythonGenerator.valueToCode(block, 'VALUE', module.pythonGenerator.ORDER_NONE) || '0';
             const varId = block.getFieldValue('VAR');
             const variable = block.workspace.getVariableById(varId);
@@ -403,16 +403,16 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
         };
 
 
-        module.pythonGenerator.forBlock['offboard'] = function(block) {
+        module.pythonGenerator.forBlock['offboard'] = function (block) {
             block.getFieldValue('offboard');
-        // TODO: Assemble python into the code variable
+            // TODO: Assemble python into the code variable
             return 'await drone.offboard.start()\n';
-         }
-         module.pythonGenerator.forBlock['offend'] = function(block) {
+        }
+        module.pythonGenerator.forBlock['offend'] = function (block) {
             block.getFieldValue('offend');
-        // TODO: Assemble python into the code variable
+            // TODO: Assemble python into the code variable
             return 'await drone.offboard.stop()\n';
-         }
+        }
 
         module.pythonGenerator.forBlock['position'] = function (block){
             const front = block.getFieldValue('forward');
@@ -421,7 +421,7 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
             const angle = block.getFieldValue('angle');
             return `await drone.offboard.set_position_ned(PositionNedYaw(${front},${right},${down},${angle}))\n`;
         }
-          module.pythonGenerator.forBlock['position2'] = function (block){
+        module.pythonGenerator.forBlock['position2'] = function (block) {
             const front = block.getFieldValue('forward');
             const right = block.getFieldValue('right');
             const down = block.getFieldValue('down');
@@ -429,7 +429,7 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
             return `await drone.offboard.set_velocity_body(VelocityBodyYawspeed(${front},${right},${down},${angle}))\n`;
         }
 
-          module.pythonGenerator.forBlock['acceleration'] = function (block){
+        module.pythonGenerator.forBlock['acceleration'] = function (block) {
             const north = block.getFieldValue('north');
             const east = block.getFieldValue('east');
             const down = block.getFieldValue('down');
@@ -481,90 +481,83 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
         }
 
 
-        module.pythonGenerator.forBlock['takeoff'] = function(block) {
-        block.getFieldValue('take-off');
-        // TODO: Assemble python into the code variable
-         return 'await drone.action.takeoff()\n';
-         }
+        module.pythonGenerator.forBlock['takeoff'] = function (block) {
+            block.getFieldValue('take-off');
+            // TODO: Assemble python into the code variable
+            return 'await drone.action.takeoff()\n';
+        }
 
-         module.pythonGenerator.forBlock['takeoff2'] = function(block) {
-        const height = block.getFieldValue('altitude');
-        // TODO: Assemble python into the code variable
-         return  `await drone.action.set_takeoff_altitude(${height})\n`;
+        module.pythonGenerator.forBlock['takeoff2'] = function (block) {
+            const height = block.getFieldValue('altitude');
+            return `await drone.action.set_takeoff_altitude(${height})\n`;
+        }
 
-         }
-
-         module.pythonGenerator.forBlock['hold'] = function(block) {
-        // TODO: Assemble python into the code variable
-         return  `await drone.action.hold()\n`;
-         }
+        module.pythonGenerator.forBlock['hold'] = function (block) {
+            // TODO: Assemble python into the code variable
+            return `await drone.action.hold()\n`;
+        }
 
 
-         module.pythonGenerator.forBlock['orbit'] = function(block) {
+        module.pythonGenerator.forBlock['orbit'] = function (block) {
             const speed = module.pythonGenerator.valueToCode(block, 'velocity', module.pythonGenerator.ORDER_ATOMIC) ||
-                 block.getFieldValue('velocity') || '0';
+                block.getFieldValue('velocity') || '0';
             const radius2 = module.pythonGenerator.valueToCode(block, 'radius', module.pythonGenerator.ORDER_ATOMIC) ||
-                 block.getFieldValue('radius') || '0';
-        // TODO: Assemble python into the code variable
-             return `
+                block.getFieldValue('radius') || '0';
+            // TODO: Assemble python into the code variable
+            return `
 async for position in drone.telemetry.position():
     latitude = position.latitude_deg
     longitude = position.longitude_deg
     altitude = position.absolute_altitude_m
     break  
 await drone.action.do_orbit(${radius2},${speed}, OrbitYawBehavior.HOLD_INITIAL_HEADING, latitude, longitude, altitude)\n`;
-         }
+        }
 
 
-        module.pythonGenerator.forBlock['go_to_location'] = function (block){
+        module.pythonGenerator.forBlock['go_to_location'] = function (block) {
             const longitudes = block.getFieldValue("longitude");
             const latitudes = block.getFieldValue("latitude");
             const altitudes = block.getFieldValue("altitude");
-            return `await drone.action.goto_location(${longitudes},${latitudes},${altitudes},0)\n`
-
+            return `await drone.action.goto_location(${longitudes},${latitudes},${altitudes},0)\n`;
         }
 
-         module.pythonGenerator.forBlock['setCurrentSpeed'] = function(block) {
+        module.pythonGenerator.forBlock['setCurrentSpeed'] = function (block) {
             const speed = module.pythonGenerator.valueToCode(block, 'SPEED', module.pythonGenerator.ORDER_ATOMIC) ||
-                 block.getFieldValue('SPEED') || '0';
+                block.getFieldValue('SPEED') || '0';
             return `await drone.action.set_current_speed(${speed})\n`;
-        };
+        }
 
-         module.pythonGenerator.forBlock['setMaxSpeed'] = function(block) {
-             const speed = module.pythonGenerator.valueToCode(block, 'maxSpeed', module.pythonGenerator.ORDER_ATOMIC) ||
-                 block.getFieldValue('maxSpeed') || '0';
-        // const speed = block.getFieldValue('maxSpeed');
-        // TODO: Assemble python into the code variable
-         return  `await drone.action.set_maximum_speed(${speed})\n`;
+        module.pythonGenerator.forBlock['setMaxSpeed'] = function (block) {
+            const speed = module.pythonGenerator.valueToCode(block, 'maxSpeed', module.pythonGenerator.ORDER_ATOMIC) ||
+                block.getFieldValue('maxSpeed') || '0';
+            // const speed = block.getFieldValue('maxSpeed');
+            // TODO: Assemble python into the code variable
+            return `await drone.action.set_maximum_speed(${speed})\n`;
+        }
 
-         }
+        module.pythonGenerator.forBlock['returnToLaunch'] = function (block) {
+            // TODO: Assemble python into the code variable
+            return `await drone.action.return_to_launch()\n`;
+        }
 
-         module.pythonGenerator.forBlock['returnToLaunch'] = function(block) {
-        // TODO: Assemble python into the code variable
-         return  `await drone.action.return_to_launch()\n`;
+        module.pythonGenerator.forBlock['returnToLaunchAltitude'] = function (block) {
+            // TODO: Assemble python into the code variable
+            const altitude2 = module.pythonGenerator.valueToCode(block, 'Altitude', module.pythonGenerator.ORDER_ATOMIC) ||
+                block.getFieldValue('Altitude') || '0';
+            return `await drone.action.set_return_to_launch_altitude(${altitude2})\n`;
+        }
 
-         }
+        module.pythonGenerator.forBlock['sleep'] = function (block) {
+            const sleep = block.getFieldValue('sleep');
+            // TODO: Assemble python into the code variable
+            return `await asyncio.sleep(${sleep})\n`;
+        }
 
-          module.pythonGenerator.forBlock['returnToLaunchAltitude'] = function(block) {
-              // TODO: Assemble python into the code variable
-              const altitude2 = module.pythonGenerator.valueToCode(block, 'Altitude', module.pythonGenerator.ORDER_ATOMIC) ||
-                  block.getFieldValue('Altitude') || '0';
-              return `await drone.action.set_return_to_launch_altitude(${altitude2})\n`;
-
-         }
-
-         module.pythonGenerator.forBlock['sleep'] = function(block) {
-        const sleep = block.getFieldValue('sleep');
-        // TODO: Assemble python into the code variable
-         return  `await asyncio.sleep(${sleep})\n`;
-
-         }
-
-        module.pythonGenerator.forBlock['end'] =function(block) {
-        block.getFieldValue('End-message');
-        // TODO: Assemble python into the code variable
-         return 'await drone.action.land()\n';
-         }
+        module.pythonGenerator.forBlock['end'] = function (block) {
+            block.getFieldValue('End-message');
+            // TODO: Assemble python into the code variable
+            return 'await drone.action.land()\n';
+        }
 
          module.pythonGenerator.forBlock['Spiral_Upward'] = function (block){
              const getValue = (inputName) => {

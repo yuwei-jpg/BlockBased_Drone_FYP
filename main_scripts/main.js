@@ -73,7 +73,7 @@ Blockly.Themes.Halloween = Blockly.Theme.defineTheme('halloween', {
     },
     },
  'componentStyles': {
-    'workspaceBackgroundColour': '#EFF0EA',          // Light beige-gray for a warm, neutral workspace
+    'workspaceBackgroundColour': '#EFF0EA',          // Light beige-gray for a warm, neutral workspace #ffffff '#EFF0EA'
     'toolboxBackgroundColour': '#C4BAB1',            // Soft brown-gray for the toolbox
     'toolboxForegroundColour': '#161D15',            // Darker muted brown for toolbox text
     'flyoutBackgroundColour': '#d6ccc2',             // Slightly lighter beige for the flyout background

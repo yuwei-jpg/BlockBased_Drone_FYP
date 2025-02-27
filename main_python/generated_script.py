@@ -1,3 +1,5 @@
+import math
+
 from mavsdk import System
 from mavsdk.offboard import VelocityNedYaw, VelocityBodyYawspeed, Attitude, AccelerationNed
 from mavsdk.offboard import (PositionNedYaw)
@@ -54,7 +56,7 @@ async def run():
     await drone.offboard.stop()
     await drone.action.land()
 
-    # Make sure all lines have only 4 spaces indented
+    # Make sure all lines have only 4 spaces
 
 
 # Execute the run()
