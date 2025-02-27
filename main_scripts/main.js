@@ -91,7 +91,6 @@ Blockly.Themes.Halloween = Blockly.Theme.defineTheme('halloween', {
 });
 function work()
 {
-
     // Create the main workspace.
     workspace = Blockly.inject('blocklyDiv', {
         toolbox: document.getElementById('toolbox'),
@@ -135,6 +134,30 @@ function work()
         console.log("Blocks changed, but not saving automatically.");
     });
 }
+/*--------------------------------------------------------------------------------------------------------*/
+
+// 切换抽屉面板开合
+    const toggleBtn = document.getElementById('toggleButton');
+    toggleBtn.addEventListener('click', () => {
+      const panel = document.getElementById('rightPanel');
+      panel.classList.toggle('open');
+      // 根据状态切换按钮图标或文字
+      if (panel.classList.contains('open')) {
+        toggleBtn.textContent = '>';
+      } else {
+        toggleBtn.textContent = '<';
+      }
+    });
+
+    // document.getElementById('toggleButton').addEventListener('click', function() {
+    // const panel = document.getElementById('rightPanel');
+    // panel.classList.toggle('open');
+    //
+    // // 触发Blockly的resize事件
+    // if (Blockly.getMainWorkspace()) {
+    //     Blockly.getMainWorkspace().resize();
+    // }
+// });
 /*--------------------------------------------------------------------------------------------------------*/
 
 // function saveBlocksToLocalStorage() {

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <style>
+      html, body {
+          margin: 0;
+          padding: 0;
+          overflow: hidden; /* 禁用全局滚动条 */
+          height: 100%;
+      }
+      .sliding-panel {
+          position: fixed; /* 使用 fixed 定位 */
+          top: 50%;
+          right: -300px; /* 紧贴页面右侧 */
+          transform: translateY(-50%);
+          width: 300px;
+          height: 70vh;
+          background-color: rgba(255, 255, 255, 0.9);
+          transition: right 0.3s ease;
+          z-index: 1000;
+          border-top-left-radius: 15px;
+          border-bottom-left-radius: 15px;
+          box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+      }
+
+      .sliding-panel.open {
+          right: 0; /* 打开时仍然紧贴右侧 */
+      }
+
+      .panel-content {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 5px;
+          overflow: hidden;
+      }
+
+      .drone-image {
+          width: 50px;
+          height: 50px;
+          object-fit: contain;
+          margin-top: 50px;
+      }
+
+      .flag-button {
+          position: absolute;
+          top: 10px;
+          right: 15px;
+          cursor: pointer;
+          z-index: 10; /* 确保在面板内部 */
+      }
+
+      .flag-icon {
+          width: 40px;
+          height: 40px;
+      }
+
+      .movement-trace {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          overflow: hidden;
+
+      }
+
+      .trace-line {
+          stroke: red;
+          stroke-width: 2;
+          fill: none;
+      }
+
+  </style>
+</head>
+<body>
+<div id="slidingPanel" class="sliding-panel">
+    <div class="panel-content">
+        <div class="flag-button">
+            <img src="flag.png" alt="Execute Movement" class="flag-icon">
+        </div>
+        <div class="movement-trace" id="movementTrace"></div>
+        <img src="drone.png" alt="Drone" class="drone-image">
+    </div>
+</div>
+  <script>
+    // 滑动面板控制
+// 滑动面板控制
+function toggleSlidingPanel() {
+    const panel = document.getElementById('slidingPanel');
+    panel.classList.toggle('open');
+}
+
+// 创建滑动按钮
+function createSlideButton() {
+    const slideButton = document.createElement('div');
+    slideButton.classList.add('slide-button');
+    slideButton.innerHTML = '❮'; // 使用更美观的箭头符号
+    slideButton.style.cssText = `
+        position: absolute;
+        left: -40px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(255,255,255,0.8);
+        color: #333;
+        width: 40px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        z-index: 1001;
+        font-size: 20px;
+        font-weight: bold;
+    `;
+
+    // 添加悬停效果
+    slideButton.addEventListener('mouseenter', () => {
+        slideButton.style.backgroundColor = 'rgba(200,200,200,0.9)';
+    });
+    slideButton.addEventListener('mouseleave', () => {
+        slideButton.style.backgroundColor = 'rgba(255,255,255,0.8)';
+    });
+
+    slideButton.addEventListener('click', toggleSlidingPanel);
+    
+    const panel = document.getElementById('slidingPanel');
+    panel.appendChild(slideButton);
+}
+
+// 执行 Z 字形飞行轨迹
+function executeZigzagMovement() {
+    const traceContainer = document.getElementById('movementTrace');
+    const droneImage = document.querySelector('.drone-image');
+    traceContainer.innerHTML = ''; // 清除之前的轨迹
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.pointerEvents = 'none';
+
+    traceContainer.appendChild(svg);
+
+    // 新的轨迹坐标点（相对于面板大小）
+    const points = [
+        {x: 50, y: 50},   // 起点
+        {x: 50, y: 150},  // 先往下运动
+        {x: 150, y: 100}, // 45度角往东北方向（七点位置）
+        {x: 159, y: 200}, // 第二个拐点
+        // {x: 300, y: 200}  // 终点（向下运动）
+    ];
+
+    // 创建轨迹线
+    const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    polyline.setAttribute('fill', 'none');
+    polyline.setAttribute('stroke', 'red');
+    polyline.setAttribute('stroke-width', '2');
+    svg.appendChild(polyline);
+
+    // 动态绘制轨迹和移动无人机
+    function animateMovement() {
+        let currentPointIndex = 0;
+        let drawnPoints = []; // 用于存储已绘制的轨迹点
+
+        const drawInterval = setInterval(() => {
+            if (currentPointIndex < points.length) {
+                const currentPoint = points[currentPointIndex];
+                
+                // 移动无人机
+                droneImage.style.position = 'absolute';
+                droneImage.style.left = `${currentPoint.x - 38}px`; // 调整无人机位置
+                droneImage.style.top = `${currentPoint.y - 38}px`; // 调整无人机位置
+                droneImage.style.width = '50px';  // 固定无人机大小
+                droneImage.style.height = '50px';
+                droneImage.style.transition = 'all 1s ease'; // 减慢移动速度
+
+                // 延迟绘制轨迹
+                setTimeout(() => {
+                    drawnPoints.push(currentPoint);
+                    const currentPoints = drawnPoints
+                        .map(p => `${p.x},${p.y}`)
+                        .join(' ');
+                    polyline.setAttribute('points', currentPoints);
+                }, 500); // 延迟0.5秒绘制轨迹
+
+                currentPointIndex++;
+            } else {
+                clearInterval(drawInterval);
+            }
+        }, 1000); // 增加间隔时间，使移动更自然
+    }
+
+    animateMovement();
+}
+
+// 防止面板内容被选中和拖动
+function preventInterference() {
+    const panel = document.getElementById('slidingPanel');
+    panel.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // 阻止默认的选择和拖动行为
+    });
+}
+
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+    createSlideButton();
+    preventInterference();
+
+    // 为 flag 按钮添加点击事件
+    const flagButton = document.querySelector('.flag-button');
+    flagButton.addEventListener('click', executeZigzagMovement);
+});
+  </script>
+
+</body>
+</html>
