@@ -1,13 +1,14 @@
 import asyncio
 import csv
 from mavsdk import System
-from mavsdk.offboard import AttitudeRate, VelocityBodyYawspeed, OffboardError, PositionNedYaw
+from mavsdk.offboard import AttitudeRate, VelocityBodyYawspeed, OffboardError, PositionNedYaw, VelocityNedYaw, \
+    AccelerationNed
 from mavsdk.telemetry import LandedState
 
 
-# 读取 IMU 数据
 def get_current_imu_data(imu_data, time):
-    return next((data for data in imu_data if time <= data[0]), None)
+    valid_data = [data for data in imu_data if data[0] >= time]  # 选择下一个时间点的数据
+    return valid_data[0] if valid_data else None
 
 
 async def run():
@@ -30,9 +31,12 @@ async def run():
     await drone.action.arm()
 
     print("-- Setting initial setpoint")
-    startSetpoint = PositionNedYaw(0.0, 0.0, 0.0, 0.0)
-    await drone.offboard.set_position_ned(startSetpoint)
-
+    try:
+        await drone.offboard.set_attitude_rate(AttitudeRate(0.0, 0.0, 0.0, 0))
+        await drone.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+    except OffboardError as error:
+        print(f"Setting initial setpoint failed: {error}")
+        return
 
     print("-- Starting offboard mode")
     try:
@@ -43,13 +47,13 @@ async def run():
         await drone.action.disarm()
         return
 
-    await drone.offboard.set_position_ned(PositionNedYaw(0,0,-10,0))
+    await drone.offboard.set_position_ned(PositionNedYaw(0, 0, -40, 0))
     await asyncio.sleep(10)
 
     imu_data = []
 
     # 读取 IMU 数据
-    imu_file = "imu.txt"
+    imu_file = "imu.csv"
     with open(imu_file, newline="") as csvfile:
         reader = csv.reader(csvfile, delimiter=' ')
         next(reader)  # 跳过标题行
@@ -58,39 +62,30 @@ async def run():
             imu_data.append((ts, wx, wy, wz, ax, ay, az))
 
     print("-- Executing IMU-based attitude & acceleration control")
-    total_duration = imu_data[-1][0]
-    t = 0
-    vx, vy, vz = 0.0, 0.0, 0.0  # 初始速度
 
-    while t <= total_duration:
-        current_imu = get_current_imu_data(imu_data, t)
-        if current_imu is None:
-            break
-
-        _, wx, wy, wz, ax, ay, az = current_imu  # 读取当前时间点的 IMU 数据
+    i = 0  # 设定索引
+    while i < len(imu_data):
+        current_imu = imu_data[i]
+        ts, wx, wy, wz, ax, ay, az = current_imu
 
         print(f"Applying wx: {wx}, wy: {wy}, wz: {wz} | ax: {ax}, ay: {ay}, az: {az}")
 
-        # 计算新的速度，假设每个时间步长 Δt = 0.05s
-        dt = 0.05
-        vx += ax * dt
-        vy += ay * dt
-        vz += az * dt
-
-        # 设定无人机的角速度（旋转控制）
+        # 更新角速度
         await drone.offboard.set_attitude_rate(
             AttitudeRate(wx, wy, wz, 0.6)
         )
-        await asyncio.sleep(dt)
 
-        # 设定无人机的线速度（基于加速度计算）
-        await drone.offboard.set_velocity_body(
-            VelocityBodyYawspeed(vx, vy, vz, wz)
-        )
+        # 更新线速度
+        await drone.offboard.set_acceleration_ned(AccelerationNed(ax, ay, az))
+        # await drone.offboard.set_velocity_ned(VelocityNedYaw(ax * 0.05, ay * 0.05, az * 0.05, wz))
+        # await drone.offboard.set_velocity_body(
+        #     VelocityBodyYawspeed(ax * 0.05, ay * 0.05, az * 0.05, wz)
+        # )
 
         # 控制时间步长
-        await asyncio.sleep(dt)
-        t += dt
+        await asyncio.sleep(0.0085)
+
+        i += 1  # 递增索引，确保切换到下一个数据点
 
     print("-- IMU-based control completed")
 
