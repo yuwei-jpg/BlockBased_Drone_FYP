@@ -1,7 +1,7 @@
 Blockly.defineBlocksWithJsonArray([
   {
     "type": "Zigzag",
-    "message0": "Zigzag flight %1 amplitude %2 speed %3",
+    "message0": "Zigzag flight %1 time step %2 mode %3",
     "args0": [
       {
         "type": "input_dummy",
@@ -55,8 +55,8 @@ Blockly.defineBlocksWithJsonArray([
 // Set the default value
 Blockly.Blocks['Zigzag'].getDefaultValue = function(inputName) {
   return {
-    'AMPLITUDE_INPUT': 10.0,
-    'SPEED_INPUT': 6.0
+    'AMPLITUDE_INPUT': 0.1,
+    'SPEED_INPUT': 0
   }[inputName] || 0;
 };
 

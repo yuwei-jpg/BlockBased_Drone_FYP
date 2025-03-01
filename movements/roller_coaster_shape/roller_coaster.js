@@ -1,7 +1,7 @@
 Blockly.defineBlocksWithJsonArray([
   {
-    "type": "Spiral_Upward",
-    "message0": "Spiral Ascend %1 time step %2 mode %3 ",
+    "type": "Roller_Coaster",
+    "message0": "Roller Coaster %1 time step %2 mode %3",
     "args0": [
       {
         "type": "input_dummy",
@@ -9,26 +9,21 @@ Blockly.defineBlocksWithJsonArray([
       },
       {
         "type": "input_value",
-        "name": "RADIUS_INPUT",
+        "name": "TIME_STEP",
         "check": "child_block"
       },
       {
         "type": "input_value",
-        "name": "SPEED_INPUT",
+        "name": "MODE",
         "check": "child_block"
-      },
-      // {
-      //   "type": "input_value",
-      //   "name": "ANGLE_INPUT",
-      //   "check": "child_block"
-      // }
+      }
     ],
     "colour": '#78677A',
     "previousStatement": null,
     "nextStatement": null,
     "init": function() {
       // Initialize the default connection
-      ['RADIUS_INPUT', 'SPEED_INPUT'].forEach(input => {
+      ['TIME_STEP', 'MODE'].forEach(input => {
         const child = Blockly.serialization.blocks.append(
           {
             "type": "child_block",
@@ -58,17 +53,17 @@ Blockly.defineBlocksWithJsonArray([
 ]);
 
 // Set the default value
-Blockly.Blocks['Spiral_Upward'].getDefaultValue = function(inputName) {
+Blockly.Blocks['Roller_Coaster'].getDefaultValue = function(inputName) {
   return {
-    'RADIUS_INPUT': 0.1,
-    'SPEED_INPUT': 0
+    'TIME_STEP': 0.1,
+    'MODE': 0
   }[inputName] || 0;
 };
 
 // Connection protection logic
-Blockly.Blocks['Spiral_Upward'].onchange = function(event) {
+Blockly.Blocks['Roller_Coaster'].onchange = function(event) {
   if (event instanceof Blockly.Events.BlockMove) {
-    ['RADIUS_INPUT', 'SPEED_INPUT'].forEach(input => {
+    ['TIME_STEP', 'MODE'].forEach(input => {
       const conn = this.getInput(input).connection;
       if (!conn.targetConnection) {
         const child = Blockly.serialization.blocks.append(
@@ -83,5 +78,3 @@ Blockly.Blocks['Spiral_Upward'].onchange = function(event) {
     });
   }
 };
-
-

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>生成图形 CSV 与预览</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    label, select, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    select, input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    #result {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+    #previewContainer {
+      max-width: 500px;
+      margin: 20px auto;
+      text-align: center;
+    }
+    #previewCanvas {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>生成图形 CSV 与预览</h1>
+  <form id="shapeForm">
+    <label for="shape">选择图形类型：</label>
+    <select id="shape" name="shape">
+      <option value="z shape">Z Shape</option>
+      <option value="s shape">S Shape</option>
+      <option value="l shape">L Shape</option>
+      <option value="circle">Circle</option>
+      <option value="square">Square</option>
+      <option value="triangle">Triangle</option>
+    </select>
+    <button type="submit">生成 CSV 并预览图形</button>
+  </form>
+  <div id="result"></div>
+  <div id="previewContainer">
+    <canvas id="previewCanvas" width="400" height="400"></canvas>
+  </div>
+
+  <script>
+    // 工具函数：生成等间隔数值数组
+    function linspace(start, stop, num) {
+      const arr = [];
+      const step = (stop - start) / (num - 1);
+      for (let i = 0; i < num; i++) {
+        arr.push(start + step * i);
+      }
+      return arr;
+    }
+
+    // 构造 CSV 内容（包含固定表头）
+    function buildCSV(t_values, px_values, py_values, pz_values) {
+      const total_points = t_values.length;
+      const vx = new Array(total_points).fill(0);
+      const vy = new Array(total_points).fill(0);
+      const vz = new Array(total_points).fill(0);
+      const yaw = new Array(total_points).fill(0);
+      const mode = new Array(total_points).fill(70);
+      let csvContent = "idx,t,px,py,pz,vx,vy,vz,ax,ay,az,yaw,mode\n";
+      for (let i = 0; i < total_points; i++) {
+        const row = [
+          i,
+          t_values[i],
+          px_values[i],
+          py_values[i],
+          pz_values[i],
+          vx[i],
+          vy[i],
+          vz[i],
+          0, // ax
+          0, // ay
+          0, // az
+          yaw[i],
+          mode[i]
+        ];
+        csvContent += row.join(",") + "\n";
+      }
+      return csvContent;
+    }
+
+    // 生成 Z Shape 数据：返回 CSV 字符串及 x、y 坐标数组
+    function generateZShapeData() {
+      const z_length = 20;
+      const z_width = 10;
+      const num_segments = 3;
+      const points_per_segment = 50;
+      const total_points = num_segments * points_per_segment;
+      const duration = 20;
+      const z_height = 5;
+      const t_values = linspace(0, duration, total_points);
+
+      let px_values = [];
+      px_values = px_values.concat(linspace(0, z_width, points_per_segment));
+      px_values = px_values.concat(linspace(z_width, 0, points_per_segment));
+      px_values = px_values.concat(linspace(0, z_width, points_per_segment));
+
+      let py_values = [];
+      py_values = py_values.concat(linspace(0, z_length / 2, points_per_segment));
+      py_values = py_values.concat(linspace(z_length / 2, z_length, points_per_segment));
+      py_values = py_values.concat(linspace(z_length, z_length * 1.5, points_per_segment));
+
+      const pz_values = new Array(total_points).fill(-z_height);
+      const csv = buildCSV(t_values, px_values, py_values, pz_values);
+      return { csv: csv, x: px_values, y: py_values };
+    }
+
+    // 生成 S Shape 数据：采用正弦曲线模拟 S 型轨迹
+    function generateSShapeData() {
+      const total_points = 150;
+      const duration = 20;
+      const amplitude = 5;
+      const length = 30;
+      const t_values = linspace(0, duration, total_points);
+      const py_values = linspace(0, length, total_points);
+      const px_values = t_values.map(t => amplitude * Math.sin((2 * Math.PI / duration) * t));
+      const pz_values = new Array(total_points).fill(-5);
+      const csv = buildCSV(t_values, px_values, py_values, pz_values);
+      return { csv: csv, x: px_values, y: py_values };
+    }
+
+    // 生成 L Shape 数据：由水平段和垂直段组成 L 型轨迹
+    function generateLShapeData() {
+      const points_horizontal = 75;
+      const points_vertical = 75;
+      const total_points = points_horizontal + points_vertical;
+      const duration = 20;
+      const line_length = 20;
+      const t_values = linspace(0, duration, total_points);
+
+      const px_horizontal = linspace(0, line_length, points_horizontal);
+      const py_horizontal = new Array(points_horizontal).fill(0);
+      const px_vertical = new Array(points_vertical).fill(line_length);
+      const py_vertical = linspace(0, line_length, points_vertical);
+
+      const px_values = px_horizontal.concat(px_vertical);
+      const py_values = py_horizontal.concat(py_vertical);
+      const pz_values = new Array(total_points).fill(-5);
+      const csv = buildCSV(t_values, px_values, py_values, pz_values);
+      return { csv: csv, x: px_values, y: py_values };
+    }
+
+    // 生成 Circle 数据：利用圆的参数方程
+    function generateCircleData() {
+      const total_points = 200;
+      const duration = 20;
+      const radius = 10;
+      const t_values = linspace(0, duration, total_points);
+      const theta_values = linspace(0, 2 * Math.PI, total_points);
+      const px_values = theta_values.map(theta => radius * Math.cos(theta));
+      const py_values = theta_values.map(theta => radius * Math.sin(theta));
+      const pz_values = new Array(total_points).fill(-5);
+      const csv = buildCSV(t_values, px_values, py_values, pz_values);
+      return { csv: csv, x: px_values, y: py_values };
+    }
+
+    // 生成 Square 数据：正方形路径
+    function generateSquareData() {
+      const points_per_side = 50;
+      const total_points = points_per_side * 4;
+      const duration = 20;
+      const side = 20;
+      const t_values = linspace(0, duration, total_points);
+      let px_values = [];
+      let py_values = [];
+      px_values = px_values.concat(linspace(0, side, points_per_side));
+      py_values = py_values.concat(new Array(points_per_side).fill(0));
+      px_values = px_values.concat(new Array(points_per_side).fill(side));
+      py_values = py_values.concat(linspace(0, side, points_per_side));
+      px_values = px_values.concat(linspace(side, 0, points_per_side));
+      py_values = py_values.concat(new Array(points_per_side).fill(side));
+      px_values = px_values.concat(new Array(points_per_side).fill(0));
+      py_values = py_values.concat(linspace(side, 0, points_per_side));
+      const pz_values = new Array(total_points).fill(-5);
+      const csv = buildCSV(t_values, px_values, py_values, pz_values);
+      return { csv: csv, x: px_values, y: py_values };
+    }
+
+    // 生成 Triangle 数据：等边三角形路径
+    function generateTriangleData() {
+      const points_per_side = 50;
+      const total_points = points_per_side * 3;
+      const duration = 20;
+      const side = 20;
+      const t_values = linspace(0, duration, total_points);
+      let px_values = [];
+      let py_values = [];
+      const A = { x: 0, y: 0 };
+      const B = { x: side, y: 0 };
+      const C = { x: side / 2, y: side * Math.sin(Math.PI / 3) };
+
+      px_values = px_values.concat(linspace(A.x, B.x, points_per_side));
+      py_values = py_values.concat(linspace(A.y, B.y, points_per_side));
+      px_values = px_values.concat(linspace(B.x, C.x, points_per_side));
+      py_values = py_values.concat(linspace(B.y, C.y, points_per_side));
+      px_values = px_values.concat(linspace(C.x, A.x, points_per_side));
+      py_values = py_values.concat(linspace(C.y, A.y, points_per_side));
+      const pz_values = new Array(total_points).fill(-5);
+      const csv = buildCSV(t_values, px_values, py_values, pz_values);
+      return { csv: csv, x: px_values, y: py_values };
+    }
+
+    // 在 Canvas 上绘制图形预览
+    function drawShape(xArray, yArray) {
+      const canvas = document.getElementById('previewCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 计算坐标边界
+      const minX = Math.min(...xArray);
+      const maxX = Math.max(...xArray);
+      const minY = Math.min(...yArray);
+      const maxY = Math.max(...yArray);
+
+      // 添加内边距
+      const padding = 20;
+      const scaleX = (canvas.width - 2 * padding) / (maxX - minX);
+      const scaleY = (canvas.height - 2 * padding) / (maxY - minY);
+      const scale = Math.min(scaleX, scaleY);
+
+      // 坐标转换：将数据坐标映射到 Canvas 坐标系（注意 y 轴反转）
+      function transformX(x) {
+        return padding + (x - minX) * scale;
+      }
+      function transformY(y) {
+        return canvas.height - padding - (y - minY) * scale;
+      }
+
+      ctx.beginPath();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#e74c3c";
+      ctx.moveTo(transformX(xArray[0]), transformY(yArray[0]));
+      for (let i = 1; i < xArray.length; i++) {
+        ctx.lineTo(transformX(xArray[i]), transformY(yArray[i]));
+      }
+      ctx.stroke();
+
+      // 绘制数据点
+      ctx.fillStyle = "#3498db";
+      for (let i = 0; i < xArray.length; i++) {
+        const x = transformX(xArray[i]);
+        const y = transformY(yArray[i]);
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+    }
+
+    // 监听表单提交事件，根据用户选择生成 CSV 并预览图形
+    document.getElementById('shapeForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const shapeInput = document.getElementById('shape').value.trim().toLowerCase();
+      let data;
+      switch(shapeInput) {
+        case "z shape":
+          data = generateZShapeData();
+          break;
+        case "s shape":
+          data = generateSShapeData();
+          break;
+        case "l shape":
+          data = generateLShapeData();
+          break;
+        case "circle":
+          data = generateCircleData();
+          break;
+        case "square":
+          data = generateSquareData();
+          break;
+        case "triangle":
+          data = generateTriangleData();
+          break;
+        default:
+          alert("不支持该图形类型");
+          return;
+      }
+
+      // 生成 CSV 文件并触发下载
+      const blob = new Blob([data.csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = shapeInput + "_trajectory.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      document.getElementById('result').textContent = "CSV 文件生成完成，正在下载...";
+
+      // 绘制图形预览
+      drawShape(data.x, data.y);
+    });
+  </script>
+</body>
+</html>

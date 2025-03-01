@@ -104,13 +104,27 @@ app.post("/run_MAVSDK", async (req, res) => {
         // 生成的代码需要嵌入到 run() 函数中
         const fullScript = `
 import asyncio
+import csv
 from mavsdk import System
 from mavsdk.action import OrbitYawBehavior
-from mavsdk.offboard import VelocityNedYaw,VelocityBodyYawspeed,Attitude
+from mavsdk.offboard import VelocityNedYaw,VelocityBodyYawspeed,Attitude,AccelerationNed
 from mavsdk.offboard import (OffboardError, PositionNedYaw)
 
 async def run():
     """ Does Offboard control using position NED coordinates. """
+    mode_descriptions = {
+        0: "On the ground",
+        10: "Initial climbing state",
+        20: "Initial holding after climb",
+        30: "Moving to start point",
+        40: "Holding at start point",
+        50: "Moving to maneuvering start point",
+        60: "Holding at maneuver start point",
+        70: "Maneuvering (trajectory)",
+        80: "Holding at the end of the trajectory coordinate",
+        90: "Returning to home coordinate",
+        100: "Landing"
+    }
     drone = System()
     await drone.connect(system_address="udp://:14540")
 

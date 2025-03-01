@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Block-Based Programming On Drone</title>
     <link rel="stylesheet" href="toolbox_style.css">
-<!--    <script src="https://unpkg.com/@blockly/dev-tools"></script>-->
+    <!--    <script src="https://unpkg.com/@blockly/dev-tools"></script>-->
     <script src="https://unpkg.com/blockly/blockly.min.js"></script>
     <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
     <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
@@ -21,21 +21,23 @@
     <script src="../basic_scripts/action_scripts/start_blocks.js"></script>
     <script src="../basic_scripts/scripts/end_blocks.js"></script>
     <script src="../basic_scripts/scripts/direction.js"></script>
-    <script src="../basic_scripts/scripts/angle.js" ></script>
-    <script src="../basic_scripts/offboard_scripts/position.js" ></script>
-    <script src="../basic_scripts/offboard_scripts/offboard.js" ></script>
-    <script src="../basic_scripts/action_scripts/take_off.js" ></script>
-    <script src="../basic_scripts/scripts/core_logic.js" ></script>
-    <script src="../movements/spiral_ascend_shape/spiral_ascend.js" ></script>
-    <script src="../movements/zigzag_shape/zigzag_flight.js" ></script>
+    <script src="../basic_scripts/scripts/angle.js"></script>
+    <script src="../basic_scripts/offboard_scripts/position.js"></script>
+    <script src="../basic_scripts/offboard_scripts/offboard.js"></script>
+    <script src="../basic_scripts/action_scripts/take_off.js"></script>
+    <script src="../basic_scripts/scripts/core_logic.js"></script>
+    <script src="../movements/spiral_ascend_shape/spiral_ascend.js"></script>
+    <script src="../movements/zigzag_shape/zigzag_flight.js"></script>
+    <script src="../movements/roller_coaster_shape/roller_coaster.js"></script>
     <script src="../main_scripts/main.js"></script>
     <script src="../main_scripts/send.js"></script>
     <script src="../main_scripts/server.js"></script>
     <script src="../basic_scripts/action_scripts/setPositionSpeed.js"></script>
 
 
-<!--    <link rel="stylesheet" href="toolbox_style.css" />-->
-    <link rel="stylesheet" href="style1.css">
+    <!--    <link rel="stylesheet" href="toolbox_style.css" />-->
+    <!--    <link rel="stylesheet" href="style1.css">-->
+
     <style>
         html,
         body {
@@ -43,10 +45,10 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            overflow: hidden; /* 防止内部滚动 */
+            /*overflow: hidden; !* 防止内部滚动 *!*/
             background-color: #C4BAB1; /* Morandi background */
+            scrollbar-color: rgba(0, 0, 0, 0) transparent;
         }
-
 
         h1 {
             margin: 10px;
@@ -55,7 +57,7 @@
             color: #333; /* Darker text for contrast */
             font-size: 32px;
             text-align: center;
-            position:relative;
+            position: relative;
             /*border-bottom: 1px solid #e0ddd9;*/
         }
 
@@ -94,7 +96,7 @@
             /*border-bottom: 2px solid #EFF0EA;*/
         }
 
-         /* Tab content container */
+        /* Tab content container */
         .tabcontent {
             display: none;
             /*padding: 10px;*/
@@ -104,7 +106,7 @@
         }
 
         .tabcontent.active {
-        display: block;
+            display: block;
         }
 
         #Playground {
@@ -112,9 +114,9 @@
             /*padding: 0;*/
             height: calc(100vh - 50px); /* 减去标签页的高度 */
             width: 100%;
-            overflow: hidden;
+            /*overflow: hidden;*/
             position: relative;
-            display:flex;
+            display: flex;
         }
 
         #readmeContent {
@@ -126,28 +128,27 @@
             border-radius: 5px;
         }
 
-         #blocklyDiv {
+        #blocklyDiv {
             /*height: 750px;*/
             /*width: 100%;*/
-             background-color: #faf9f6; /* Background for Blockly */
-             position: absolute;
-             top: 0;
-             left: 0;
-             right: 0;
-             bottom: 0;
-             width: 100% !important; /* 覆盖内联样式 */
-             height: 100% !important; /* 覆盖内联样式 */
-             flex: 1;
-             min-width: 0; /* 防止内容溢出 */
-             transition: all 0.3s ease;
+            background-color: #faf9f6; /* Background for Blockly */
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100% !important; /* 覆盖内联样式 */
+            height: 100% !important; /* 覆盖内联样式 */
+            flex: 1;
+            /*min-width: 0; !* 防止内容溢出 *!*/
+            /*transition: all 0.3s ease;*/
         }
-         .tab {
+
+        .tab {
             position: relative;
             z-index: 1;
-             height: 39px; /* 标签页高度 */
+            height: 39px; /* 标签页高度 */
             left: 0; /* Align with the page edge */
-
-
         }
 
         /* Toolbox and Playground integration */
@@ -168,6 +169,7 @@
             max-width: 80vw;
             z-index: 1000;
         }
+
         .notification {
 
             position: fixed;
@@ -186,63 +188,64 @@
             background-color: #2196F3;
         }
 
-       .notification.success {
+        .notification.success {
 
-           background-color: #4CAF50;
-       }
+            background-color: #4CAF50;
+        }
+
         .notification.error {
-       background-color: #F44336;
-       }
+            background-color: #F44336;
+        }
 
-       @keyframes slideIn {
-       from {
-        transform: translateX(100%);
-        opacity: 0;
-         }
-           to {
-        transform: translateX(0);
-        opacity: 1;
-         }
-       }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
 
-       /*.page-header {*/
-       /*    background-color: #C4BAB1;*/
-       /*    padding: 20px 0;*/
-       /*    position: relative;*/
-       /*}*/
+        /*.page-header {*/
+        /*    background-color: #C4BAB1;*/
+        /*    padding: 20px 0;*/
+        /*    position: relative;*/
+        /*}*/
 
-       .action-buttons {
-           position: absolute;
-           right: 20px;
-           top: 20px;
-           display: flex;
-           gap: 6px;
-           flex-direction: column;
-       }
+        .action-buttons {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            gap: 6px;
+            flex-direction: column;
+        }
 
-       .action-btn {
-           padding: 6px 16px;
-           background-color: #E6E2DD;
-           border: none;
-           border-radius: 2px;
-           color: #333;
-           font-size: 14px;
-           cursor: pointer;
-           transition: all 0.3s ease;
-           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-           /*width: 120px;*/
-       }
+        .action-btn {
+            padding: 6px 16px;
+            background-color: #E6E2DD;
+            border: none;
+            border-radius: 2px;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            /*width: 120px;*/
+        }
 
-       .action-btn:hover {
-           background-color: #D4CEC7;
-           transform: translateY(-2px);
-           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-       }
+        .action-btn:hover {
+            background-color: #D4CEC7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
 
-       .action-btn:active {
-           transform: translateY(0);
-           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-       }
+        .action-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
         #simulatorContainer {
             width: 40%;
@@ -302,138 +305,215 @@
             background-color: #f1f1f1; /* 悬停时的背景色 */
         }
 
+        /* CSV File 页面的样式 */
+        .csv-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .csv-container h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .csv-container form, .csv-container canvas, .csv-container #csvResult {
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .csv-container select, .csv-container button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .csv-container button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .csv-container button:hover {
+            background-color: #2980b9;
+        }
 
     </style>
 
 </head>
-
-  <body onload ="work()">
-    <header class="page-header">
-        <h1 class="main-title">Block-Based Programming On Drone</h1>
-        <div class="dropdown">
-            <button class="dropbtn">Blockly Actions ▼</button>
-            <div class="dropdown-content">
-                <a href="#" class="action-btn" onclick="generateCode()">Generate Code</a>
-<!--                <a href="#" class="action-btn" onclick="saveBlocksToLocalStorage()">Save Blocks</a>-->
-<!--                <a href="#" class="action-btn" onclick="clearSavedBlocks()">Delete Blocks</a>-->
-                <a href="#" class="action-btn" onclick="runCode()">Run Simulator</a>
-            </div>
+<body onload="work()">
+<header class="page-header">
+    <h1 class="main-title">Block-Based Programming On Drone</h1>
+    <div class="dropdown">
+        <button class="dropbtn">Blockly Actions ▼</button>
+        <div class="dropdown-content">
+            <a href="#" class="action-btn" onclick="generateCode()">Generate Code</a>
+            <!--                <a href="#" class="action-btn" onclick="saveBlocksToLocalStorage()">Save Blocks</a>-->
+            <!--                <a href="#" class="action-btn" onclick="clearSavedBlocks()">Delete Blocks</a>-->
+            <a href="#" class="action-btn" onclick="runCode()">Run Simulator</a>
         </div>
-        <nav class="tab">
-            <button class="tablinks active" onclick="openTab(event, 'Playground')">Playground</button>
-            <button class="tablinks" onclick="openTab(event, 'Readme')">README</button>
-        </nav>
-    </header>
-
-     <div id="Playground" class="tabcontent" style="display: flex; height: calc(100vh - 50px);">
-<!--         <div id="blocklyDiv" style="flex: 1;"></div>-->
-         <div id="blocklyDiv"></div>
-
-     </div>
-
-     <div id="Readme" class="tabcontent">
-         <div id="readmeContent">Loading README...</div>
-     </div>
-
-
-     <!-- Modal Box -->
-     <div id="codeModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-         background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1000;">
-         <h3>Generated Python Code</h3>
-         <pre id="modalContent" style="font-family: monospace; white-space: pre-wrap; background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow: auto; max-height: 500px;max-width: 500px;"></pre>
-         <button class="action-btn" onclick="closeModal()" style="margin-top: 10px; padding: 5px 10px; background-color: #ddd; border: none; border-radius: 3px;">Close &#x274C;</button>
-         <button class="action-btn" onclick="copyCode()" style="margin-top: 10px; margin-left: 10px; padding: 5px 10px; background-color: #ddd; border: none; border-radius: 3px;">Copy &#x1F4CB;</button>
     </div>
+    <nav class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'Playground')">Playground</button>
+        <button class="tablinks" onclick="openTab(event, 'Readme')">README</button>
+        <button class="tablinks" onclick="openTab(event, 'CSVFile')">CSV FILE</button>
+    </nav>
+</header>
 
-    <!-- Modal Box Background -->
-    <div id="modalBackdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 999;" onclick="closeModal()"></div>
+<div id="Playground" class="tabcontent" style="display: flex; height: calc(100vh - 50px);">
+    <div id="blocklyDiv" style="flex: 1;"></div>
+    <!--         <div id="blocklyDiv"></div>-->
+</div>
 
-    <!--Toolbox Definition -->
-     <xml id="toolbox" style="display: none">
-         <category name="Example" categorystyle="Example"></category>
-         <category name="Core" categorystyle="core">
-             <category name="Control" categorystyle="Control">
-                 <block type="controls_if"></block>
-                 <block type="repeat_while"></block>
-                 <block type="check_altitude"></block>
-             </category>
-             <category name="Logic" categorystyle="Logic">
-                 <block type="logic_compare"></block>
-                 <block type="logic_operation"></block>
-                 <block type="logic_boolean"></block>
-             </category>
-         </category>
+<div id="Readme" class="tabcontent">
+    <div id="readmeContent">Loading README...</div>
+</div>
 
-         <category name="Action" categorystyle="Action">
-             <block type="start" ></block>
-             <block type="takeoff"></block>
-             <block type="takeoff2"></block>
-             <block type="hold"></block>
-             <block type="orbit"></block>
-             <block type="go_to_location"></block>
-             <block type="setCurrentSpeed"></block>
-             <block type="setMaxSpeed"></block>
-             <block type="returnToLaunchAltitude"></block>
-             <block type="returnToLaunch"></block>
-             <block type="sleep"></block>
-             <block type="end" ></block>
-         </category>
+<div id="CSVFile" class="tabcontent">
+    <div class="csv-container">
+        <h2>Generate CSV File</h2>
+        <form id="csvForm">
+            <label for="csvShape">Please Choose Your Shape：</label>
+            <select id="csvShape" name="csvShape">
+                <option value="z shape">Z Shape</option>
+                <option value="s shape">S Shape</option>
+                <option value="l shape">L Shape</option>
+                <option value="circle">Circle</option>
+                <option value="square">Square</option>
+                <option value="triangle">Triangle</option>
+            </select>
+            <button type="button" onclick="handleCSV()">Generate CSV and Preview Graph</button>
+        </form>
+        <div id="csvResult"></div>
+        <div id="csvPreviewContainer"
+             style="position: relative; width: 400px; height: 400px; display: flex; justify-content: center; align-items: center;margin-left: 50px">
+            <canvas id="csvPreviewCanvas" width="400" height="400"
+                    style="background-color: #fff; border: 1px solid #ccc; border-radius: 5px;justify-content: center; align-items: center;"></canvas>
+        </div>
 
-          <category name="Position" categorystyle="Position">
-              <block type="offboard" ></block>
-              <block type="position"></block>
-              <block type="position2"></block>
-              <block type="position3"></block>
-              <block type="attitude"></block>
-              <block type="attitude_rate"></block>
-              <block type="acceleration"></block>
-              <block type="position3_acc"></block>
-              <block type="offend" ></block>
-         </category>
 
-         <category name="Movement" categorystyle="Movement">
-             <block type="Spiral_Upward" ></block>
-             <block type="Zigzag" ></block>
-         </category>
 
-         <category
-                 name="Variables"
-                 categorystyle="variable_category"
-                 custom="VARIABLE">
-         </category>
+<!--        <canvas id="csvPreviewCanvas" width="400" height="400"></canvas>-->
+<!--        <img id="droneImage" src="drone.png" alt="Drone" style="position: absolute; width: 50px; height: 50px; display: none;">-->
+    </div>
+</div>
 
-         <category name="Math" categorystyle="math_category">
-             <block type="math_number" gap="32">
-                 <field name="NUM">123</field>
-             </block>
-             <block type="math_single">
-                 <value name="NUM">
-                    <shadow type="math_number">
-                       <field name="NUM">9</field>
-                    </shadow>
-                 </value>
-             </block>
-             <block type="math_trig">
-                 <value name="NUM">
-                    <shadow type="math_number">
-                      <field name="NUM">45</field>
-                    </shadow>
-                 </value>
-             </block>
-             <block type="math_random_int">
-                 <value name="FROM">
-                   <shadow type="math_number">
-                       <field name="NUM">1</field>
-                   </shadow>
-                 </value>
-                 <value name="TO">
-                   <shadow type="math_number">
-                     <field name="NUM">100</field>
-                   </shadow>
-                 </value>
-             </block>
-         </category>
-     </xml>
-     <script src="../main_scripts/send.js" defer></script>
-   </body>
+<!-- Modal Box -->
+<div id="codeModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+         background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1000;">
+    <h3>Generated Python Code</h3>
+    <pre id="modalContent"
+         style="font-family: monospace; white-space: pre-wrap; background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow: auto; max-height: 500px;max-width: 500px;"></pre>
+    <button class="action-btn" onclick="closeModal()"
+            style="margin-top: 10px; padding: 5px 10px; background-color: #ddd; border: none; border-radius: 3px;">Close
+        &#x274C;
+    </button>
+    <button class="action-btn" onclick="copyCode()"
+            style="margin-top: 10px; margin-left: 10px; padding: 5px 10px; background-color: #ddd; border: none; border-radius: 3px;">
+        Copy &#x1F4CB;
+    </button>
+</div>
+
+<!-- Modal Box Background -->
+<div id="modalBackdrop"
+     style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 999;"
+     onclick="closeModal()"></div>
+
+<!--Toolbox Definition -->
+<xml id="toolbox" style="display: none">
+    <category name="Example" categorystyle="Example"></category>
+    <category name="Core" categorystyle="core">
+        <category name="Control" categorystyle="Control">
+            <block type="controls_if"></block>
+            <block type="repeat_while"></block>
+            <block type="check_altitude"></block>
+        </category>
+        <category name="Logic" categorystyle="Logic">
+            <block type="logic_compare"></block>
+            <block type="logic_operation"></block>
+            <block type="logic_boolean"></block>
+        </category>
+    </category>
+
+    <category name="Action" categorystyle="Action">
+        <block type="start"></block>
+        <block type="takeoff"></block>
+        <block type="takeoff2"></block>
+        <block type="hold"></block>
+        <block type="orbit"></block>
+        <block type="go_to_location"></block>
+        <block type="setCurrentSpeed"></block>
+        <block type="setMaxSpeed"></block>
+        <block type="returnToLaunchAltitude"></block>
+        <block type="returnToLaunch"></block>
+        <block type="sleep"></block>
+        <block type="end"></block>
+    </category>
+
+    <category name="Position" categorystyle="Position">
+        <block type="offboard"></block>
+        <block type="position"></block>
+        <block type="position2"></block>
+        <block type="position3"></block>
+        <block type="attitude"></block>
+        <block type="attitude_rate"></block>
+        <block type="acceleration"></block>
+        <block type="position3_acc"></block>
+        <block type="offend"></block>
+    </category>
+
+    <category name="Movement" categorystyle="Movement">
+        <block type="Spiral_Upward"></block>
+        <block type="Zigzag"></block>
+        <block type="Roller_Coaster"></block>
+    </category>
+
+    <category
+            name="Variables"
+            categorystyle="variable_category"
+            custom="VARIABLE">
+    </category>
+
+    <category name="Math" categorystyle="math_category">
+        <block type="math_number" gap="32">
+            <field name="NUM">123</field>
+        </block>
+        <block type="math_single">
+            <value name="NUM">
+                <shadow type="math_number">
+                    <field name="NUM">9</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="math_trig">
+            <value name="NUM">
+                <shadow type="math_number">
+                    <field name="NUM">45</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="math_random_int">
+            <value name="FROM">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
+            <value name="TO">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+        </block>
+    </category>
+</xml>
+<script src="../main_scripts/send.js" defer></script>
+</body>
 </html>

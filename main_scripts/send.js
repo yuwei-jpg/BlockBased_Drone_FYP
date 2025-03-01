@@ -569,11 +569,120 @@ await drone.action.do_orbit(${radius2},${speed}, OrbitYawBehavior.HOLD_INITIAL_H
                      childBlock.getFieldValue("VALUE")||'0';
              };
 
-             const radius = getValue('RADIUS_INPUT');
-             const speed = getValue('SPEED_INPUT');
+             const time_step = getValue('RADIUS_INPUT');
+             const  mode = getValue('SPEED_INPUT');
              const angle_speed = getValue('ANGLE_INPUT');
 
-             return `await spiral_ascend(drone, 50, ${radius}, ${speed}, ${angle_speed})`
+             return `    
+    waypoints = []
+
+    # read the csv file
+    csv_file = "spiral_ascend_trajectory.csv"
+    with open(csv_file, newline="") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            waypoints.append((float(row["t"]),
+                              float(row["px"]),
+                              float(row["py"]),
+                              float(row["pz"]),
+                              float(row["vx"]),
+                              float(row["vy"]),
+                              float(row["vz"]),
+                              float(row["ax"]),
+                              float(row["ay"]),
+                              float(row["az"]),
+                              int(row["mode"])))
+
+    print("-- Executing Z trajectory")
+    total_duration = waypoints[-1][0]
+    t = 0
+    last_mode = ${mode}
+
+    while t <= total_duration:
+        current_waypoint = get_current_waypoint(waypoints, t)
+        if current_waypoint is None:
+            break
+
+        position = current_waypoint[1:4]  # (px, py, pz)
+        velocity = current_waypoint[4:7]  # (vx, vy, vz)
+        mode_code = current_waypoint[-1]
+
+        if last_mode != mode_code:
+            print(f" Mode: {mode_code}, {mode_descriptions.get(mode_code, 'Unknown Mode')}")
+            last_mode = mode_code
+
+        await drone.offboard.set_position_velocity_ned(
+            PositionNedYaw(*position, 0),
+            VelocityNedYaw(*velocity, 0)
+        )
+
+        time_step = ${time_step}
+        await asyncio.sleep(time_step)
+        t += time_step\`;`
+
+             // return `await spiral_ascend(drone, 50, ${radius}, ${speed}, ${angle_speed})`
+         }
+
+         module.pythonGenerator.forBlock['Roller_Coaster'] = function (block){
+            const getValue3 = (inputName) => {
+                 const childBlock2 = block.getInput(inputName).connection.targetBlock();
+                 if (!childBlock2 || childBlock2.type !== 'child_block') {
+                     throw new Error(`Missing required ${inputName} child block`);
+                 }
+                 return module.pythonGenerator.valueToCode(childBlock2, 'VALUE', module.pythonGenerator.ORDER_ATOMIC)||
+                     childBlock2.getFieldValue("VALUE")||'0';
+             };
+
+             const time_step = getValue3('TIME_STEP');
+             const mode = getValue3('MODE');
+
+             return `
+    waypoints = []
+    
+    # read csv data
+    csv_file = "roller_coaster_trajectory.csv"
+    with open(csv_file, newline="") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            waypoints.append((float(row["t"]),
+                              float(row["px"]),
+                              float(row["py"]),
+                              float(row["pz"]),
+                              float(row["vx"]),
+                              float(row["vy"]),
+                              float(row["vz"]),
+                              float(row["ax"]),
+                              float(row["ay"]),
+                              float(row["az"]),
+                              int(row["mode"])))
+
+    print("-- Executing Roller Coaster trajectory")
+    total_duration = waypoints[-1][0]
+    t = 0
+    last_mode = ${mode}
+
+    while t <= total_duration:
+        current_waypoint = get_current_waypoint(waypoints, t)
+        if current_waypoint is None:
+            break
+
+        position = current_waypoint[1:4]  # (px, py, pz)
+        velocity = current_waypoint[4:7]  # (vx, vy, vz)
+        mode_code = current_waypoint[-1]
+
+        if last_mode != mode_code:
+            print(f" Mode: {mode_code}, {mode_descriptions.get(mode_code, 'Unknown Mode')}")
+            last_mode = mode_code
+
+        await drone.offboard.set_position_velocity_ned(
+            PositionNedYaw(*position, 0),
+            VelocityNedYaw(*velocity, 0)
+        )
+
+        time_step = ${time_step}
+        await asyncio.sleep(time_step)
+        t += time_step
+`
          }
 
           module.pythonGenerator.forBlock['Zigzag'] = function (block){
@@ -586,10 +695,57 @@ await drone.action.do_orbit(${radius2},${speed}, OrbitYawBehavior.HOLD_INITIAL_H
                      childBlock2.getFieldValue("VALUE")||'0';
              };
 
-             const amplitude = getValue2('AMPLITUDE_INPUT');
-             const speed = getValue2('SPEED_INPUT');
+             const time_step = getValue2('AMPLITUDE_INPUT');
+             const mode = getValue2('SPEED_INPUT');
 
-             return `await zigzag_flight(drone, 50, ${amplitude}, ${speed})`
+             return `
+    waypoints = []
+
+    # read the csv file
+    csv_file = "z_trajectory.csv"
+    with open(csv_file, newline="") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            waypoints.append((float(row["t"]),
+                              float(row["px"]),
+                              float(row["py"]),
+                              float(row["pz"]),
+                              float(row["vx"]),
+                              float(row["vy"]),
+                              float(row["vz"]),
+                              float(row["ax"]),
+                              float(row["ay"]),
+                              float(row["az"]),
+                              int(row["mode"])))
+
+    print("-- Executing Z trajectory")
+    total_duration = waypoints[-1][0]
+    t = 0
+    last_mode = ${mode}
+
+    while t <= total_duration:
+        current_waypoint = get_current_waypoint(waypoints, t)
+        if current_waypoint is None:
+            break
+
+        position = current_waypoint[1:4]  # (px, py, pz)
+        velocity = current_waypoint[4:7]  # (vx, vy, vz)
+        mode_code = current_waypoint[-1]
+
+        if last_mode != mode_code:
+            print(f" Mode: {mode_code}, {mode_descriptions.get(mode_code, 'Unknown Mode')}")
+            last_mode = mode_code
+
+        await drone.offboard.set_position_velocity_ned(
+            PositionNedYaw(*position, 0),
+            VelocityNedYaw(*velocity, 0)
+        )
+
+        time_step = ${time_step}
+        await asyncio.sleep(time_step)
+        t += time_step`;
+
+             // return `await zigzag_flight(drone, 50, ${amplitude}, ${speed})`
          }
 
          // Iterate over all top-level blocks and recursively generate the complete code
