@@ -8,7 +8,7 @@ import asyncio
 from csv_generated import generate_z_trajectory_csv, generate_roller_coaster_trajectory_csv, \
     generate_spiral_ascend_trajectory_csv, generate_circle_trajectory_csv, generate_square_trajectory_csv, \
     generate_l_shape_trajectory_csv, generate_s_shape_trajectory_csv, generate_triangle_trajectory_csv
-from read_csv import execute_trajectory
+from read_csv import execute_trajectory, execute_trajectory_other
 
 
 async def run():
@@ -33,9 +33,6 @@ async def run():
     # Generated code
 
     # Make sure all lines have only 4 spaces
-    print("-- Disarming")
-    await drone.action.disarm()
-
 
 # Execute the run()
 asyncio.run(run())

@@ -2,6 +2,7 @@ const express = require("express");
 const { exec, spawn } = require("child_process");
 const app = express();
 const cors = require('cors');
+const {join} = require("path");
 
 app.use(cors());
 app.use(express.json());
@@ -85,7 +86,7 @@ app.get("/simulator_status", (req, res) => {
 
 app.get("/simulator_view", (req, res) => {
        // Returns the simulator's HTML page or redirects to the simulator's URL
-    res.sendFile(path.join(__dirname, 'path/to/simulator.html'));
+    res.sendFile(join(__dirname, 'path/to/simulator.html'));
 });
 
 // 运行 MAVSDK 代码
@@ -97,7 +98,7 @@ app.post("/run_MAVSDK", async (req, res) => {
         // 将代码写入文件
         const fs = require('fs');
         const path = require('path');
-        const scriptPath = path.join(__dirname,'main_python', 'generated_script.py');
+        const scriptPath = path.join(__dirname,'../main_python', 'generated_script.py');
         const formattedCode = code.split('\n').map(line => '    ' + line).join('\n');  // 保持一致缩进
 
 
