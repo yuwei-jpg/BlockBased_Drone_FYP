@@ -559,6 +559,8 @@ await drone.action.do_orbit(${radius2},${speed}, OrbitYawBehavior.HOLD_INITIAL_H
             return 'await drone.action.land()\n';
         }
 
+
+
          module.pythonGenerator.forBlock['Spiral_Upward'] = function (block){
              const getValue = (inputName) => {
                  const childBlock = block.getInput(inputName).connection.targetBlock();
