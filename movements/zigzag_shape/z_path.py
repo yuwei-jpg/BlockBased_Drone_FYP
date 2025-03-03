@@ -31,11 +31,9 @@ async def log_position_velocity(drone, filename="mavsdk_position_velocity.csv"):
     return file_path
 
 
-# async def log_real_position(drone):
-#     """ 实时打印 MAVSDK 反馈的无人机位置 """
-#     async for position in drone.telemetry.position():
-#         print(
-#             f"Real Position - Lat: {position.latitude:.6f}, Lon: {position.longitude:.6f}, Alt: {position.absolute_altitude:.2f}")
+# async def log_real_position(drone): """ 实时打印 MAVSDK 反馈的无人机位置 """ async for position in drone.telemetry.position():
+# print( f"Real Position - Lat: {position.latitude:.6f}, Lon: {position.longitude:.6f},
+# Alt: {position.absolute_altitude:.2f}")
 
 
 async def run():

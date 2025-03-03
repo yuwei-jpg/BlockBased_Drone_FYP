@@ -1,31 +1,19 @@
+import csv
 import math
 
 from mavsdk import System
 from mavsdk.offboard import VelocityNedYaw, VelocityBodyYawspeed, Attitude, AccelerationNed
 from mavsdk.offboard import (PositionNedYaw)
-import csv
 import asyncio
-
-
-def get_current_waypoint(waypoints, time):
-    return next((wp for wp in waypoints if time <= wp[0]), None)
+from csv_generated import generate_z_trajectory_csv, generate_roller_coaster_trajectory_csv, \
+    generate_spiral_ascend_trajectory_csv, generate_circle_trajectory_csv, generate_square_trajectory_csv, \
+    generate_l_shape_trajectory_csv, generate_s_shape_trajectory_csv, generate_triangle_trajectory_csv
+from read_csv import execute_trajectory
 
 
 async def run():
     """ Does Off-board control using position NED coordinates. """
-    mode_descriptions = {
-        0: "On the ground",
-        10: "Initial climbing state",
-        20: "Initial holding after climb",
-        30: "Moving to start point",
-        40: "Holding at start point",
-        50: "Moving to maneuvering start point",
-        60: "Holding at maneuver start point",
-        70: "Maneuvering (trajectory)",
-        80: "Holding at the end of the trajectory coordinate",
-        90: "Returning to home coordinate",
-        100: "Landing"
-    }
+
     drone = System()
     await drone.connect()  # system_address="udp://:14540"
     # await drone.connect(system_address="tcp://127.0.0.1:5760")
