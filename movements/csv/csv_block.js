@@ -27,7 +27,7 @@ Blockly.defineBlocksWithJsonArray([
         ],
         [
           "L shape",
-          "L_SHPE"
+          "L_SHAPE"
         ],
         [
           "circle",

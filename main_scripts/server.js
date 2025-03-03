@@ -110,6 +110,8 @@ from mavsdk import System
 from mavsdk.action import OrbitYawBehavior
 from mavsdk.offboard import VelocityNedYaw,VelocityBodyYawspeed,Attitude,AccelerationNed
 from mavsdk.offboard import (OffboardError, PositionNedYaw)
+from main_python.csv_generated import generate_s_shape_trajectory_csv
+from main_python.read_csv import execute_trajectory_other
 
 async def run():
     """ Does Offboard control using position NED coordinates. """
