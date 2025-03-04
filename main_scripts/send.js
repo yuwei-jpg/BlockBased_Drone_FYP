@@ -229,29 +229,29 @@ async function generateCode(event) {
          // Override the getName method to return the original variable name
         module.pythonGenerator.nameDB_.getName = function(name) {
             return name;
-        };
+        }
 
         // Define a generator for a math block
         module.pythonGenerator.forBlock['math_number'] = function(block) {
             const code = Number(block.getFieldValue('NUM'));
             return [code, module.pythonGenerator.ORDER_ATOMIC];
-        };
+        }
 
         module.pythonGenerator.forBlock['math_single'] = function (block) {
             const value = module.pythonGenerator.valueToCode(block, 'NUM', module.pythonGenerator.ORDER_NONE) || '0';
             return [`math.sqrt(${value})`, module.pythonGenerator.ORDER_FUNCTION_CALL];
-        };
+        }
 
         module.pythonGenerator.forBlock['math_trig'] = function (block) {
             const value = module.pythonGenerator.valueToCode(block, 'NUM', module.pythonGenerator.ORDER_NONE) || '0';
             return [`math.sin(math.radians(${value}))`, module.pythonGenerator.ORDER_FUNCTION_CALL];
-        };
+        }
 
         module.pythonGenerator.forBlock['math_random_int'] = function (block) {
             const min = module.pythonGenerator.valueToCode(block, 'FROM', module.pythonGenerator.ORDER_NONE) || '0';
             const max = module.pythonGenerator.valueToCode(block, 'TO', module.pythonGenerator.ORDER_NONE) || '100';
             return [`random.randint(${min}, ${max})`, module.pythonGenerator.ORDER_FUNCTION_CALL];
-        };
+        }
 
         // Define a generator for a core module
         module.pythonGenerator.forBlock['controls_if'] = function (block) {
@@ -310,7 +310,7 @@ async function generateCode(event) {
                 code += `else:\n${elseStatements}\n`;
             }
             return code;
-        };
+        }
 
 
         module.pythonGenerator.forBlock['repeat_while'] = function (block) {
@@ -335,7 +335,7 @@ async function generateCode(event) {
                     return `while not ${condition}:\n    pass\n`;
                 }
             }
-        };
+        }
 
         module.pythonGenerator.forBlock['check_altitude'] = function (block) {
             const target_altitude = block.getFieldValue('TARGET_ALTITUDE');
@@ -352,7 +352,7 @@ ${module.pythonGenerator.prefixLines(statement1, "        ")}
 ${module.pythonGenerator.prefixLines(statement2, "        ")}
         break
 `;
-        };
+        }
 
 
         module.pythonGenerator.forBlock['logic_compare'] = function (block) {
@@ -363,13 +363,13 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
                 'LTE': '<=',
                 'GT': '>',
                 'GTE': '>='
-            };
+            }
             const operator = operatorMap[block.getFieldValue('OP')];
             const left = module.pythonGenerator.valueToCode(block, 'A', module.pythonGenerator.ORDER_NONE) || '0';
             const right = module.pythonGenerator.valueToCode(block, 'B', module.pythonGenerator.ORDER_NONE) || '0';
             const code = left + ' ' + operator + ' ' + right;
             return [code, module.pythonGenerator.ORDER_RELATIONAL];
-        };
+        }
 
         module.pythonGenerator.forBlock['logic_operation'] = function (block) {
             const operator = block.getFieldValue('OP');
@@ -377,12 +377,12 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
             const right = module.pythonGenerator.valueToCode(block, 'B', module.pythonGenerator.ORDER_NONE) || 'False';
             const code = left + ' ' + operator + ' ' + right;
             return [code, module.pythonGenerator.ORDER_LOGICAL];
-        };
+        }
 
         module.pythonGenerator.forBlock['logic_boolean'] = function (block) {
             const code = block.getFieldValue('BOOL') === 'TRUE' ? 'True' : 'False';
             return [code, module.pythonGenerator.ORDER_ATOMIC];
-        };
+        }
 
         // Generators for the Variables class
 
@@ -394,7 +394,7 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
             // Use the actual name of variable
             const varName = variable ? variable.name : varId;
             return [varName, module.pythonGenerator.ORDER_ATOMIC];
-        };
+        }
 
         module.pythonGenerator.forBlock['variables_set'] = function (block) {
             const argument0 = module.pythonGenerator.valueToCode(block, 'VALUE', module.pythonGenerator.ORDER_NONE) || '0';
@@ -402,7 +402,7 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
             const variable = block.workspace.getVariableById(varId);
             const varName = variable ? variable.name : varId;
             return `${varName} = float(${argument0})\n`;
-        };
+        }
 
         module.pythonGenerator.forBlock['math_change'] = function (block) {
             const varId = block.getFieldValue('VAR');
@@ -410,7 +410,7 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
             const varName = variable ? variable.name : varId;
             const delta = module.pythonGenerator.valueToCode(block, 'DELTA', module.pythonGenerator.ORDER_ADDITIVE) || '1';
             return `${varName} += ${delta}\n`;
-        };
+        }
 
 
         module.pythonGenerator.forBlock['offboard'] = function (block) {
@@ -609,8 +609,7 @@ await drone.action.do_orbit(${radius2},${speed}, OrbitYawBehavior.HOLD_INITIAL_H
                     header = "square_data";
                     return `generate_square_trajectory_csv()\n`;
                 default:
-                    filename = "default.csv";
-                    header = "default_data";
+                   return `\n`;
             }
 
         }
@@ -618,21 +617,20 @@ await drone.action.do_orbit(${radius2},${speed}, OrbitYawBehavior.HOLD_INITIAL_H
         module.pythonGenerator.forBlock['Spiral_Upward'] = function (block) {
             const time_step = getValue(block,'RADIUS_INPUT');
             const mode = getValue(block,'SPEED_INPUT');
-            return `await execute_trajectory("spiral_ascend_trajectory.csv",${mode},${time_step},drone)\n`
+            return `await execute_trajectory("spiral_ascend_trajectory.csv",${mode},${time_step},drone)\n`;
 
         }
 
          module.pythonGenerator.forBlock['Roller_Coaster'] = function (block){
              const time_step = getValue(block,'TIME_STEP');
              const mode = getValue(block,'MODE');
-
-             return `await execute_trajectory("roller_coaster_trajectory.csv",${mode},${time_step},drone)\n`
+             return `await execute_trajectory("roller_coaster_trajectory.csv",${mode},${time_step},drone)\n`;
          }
 
         module.pythonGenerator.forBlock['Zigzag'] = function (block) {
             const time_step = getValue(block, 'AMPLITUDE_INPUT');
             const mode = getValue(block, 'SPEED_INPUT');
-            return `await execute_trajectory("z_trajectory.csv",${mode},${time_step},drone)\n`
+            return `await execute_trajectory("z_trajectory.csv",${mode},${time_step},drone)\n`;
         }
 
         module.pythonGenerator.forBlock['ALL'] = function (block) {
@@ -661,7 +659,7 @@ await drone.action.do_orbit(${radius2},${speed}, OrbitYawBehavior.HOLD_INITIAL_H
             } else {
                 return "";
             }
-        };
+        }
 
          // Iterate over all top-level blocks and recursively generate the complete code
         // const code = await module.pythonGenerator.workspaceToCode(workspace);
