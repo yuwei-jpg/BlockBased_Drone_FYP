@@ -5,13 +5,30 @@ from mavsdk.offboard import PositionNedYaw, VelocityNedYaw
 from mavsdk.offboard import OffboardError
 from mavsdk.telemetry import LandedState
 
+from movements.roller_coaster_shape.rc_path import get_current_waypoint
 
-def get_current_waypoint(waypoints, time):
-    return next((wp for wp in waypoints if time <= wp[0]), None)
 
+async def log_position_velocity(drone, filename="mavsdk_position_velocity.csv"):
+    """ 监听 MAVSDK 的 PositionVelocityNed 数据并存入 CSV 文件 """
+    file_path = f"{filename}"
+
+    with open(file_path, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["timestamp", "north_m", "east_m", "down_m", "vx_m_s", "vy_m_s", "vz_m_s"])
+        async for data in drone.telemetry.position_velocity_ned():
+            timestamp = asyncio.get_event_loop().time()  # 获取当前时间戳
+            writer.writerow([
+                timestamp,
+                data.position.north_m, data.position.east_m, data.position.down_m,
+                data.velocity.north_m_s, data.velocity.east_m_s, data.velocity.down_m_s
+            ])
+            print(
+                f"Logged - Pos: N:{data.position.north_m:.3f}, E:{data.position.east_m:.3f}, D:{data.position.down_m:.3f} | "
+                f"Vel: Vx:{data.velocity.north_m_s:.3f}, Vy:{data.velocity.east_m_s:.3f}, Vz:{data.velocity.down_m_s:.3f}")
+
+    return file_path
 
 async def run():
-    # 模式码对应的描述
     mode_descriptions = {
         0: "On the ground",
         10: "Initial climbing state",
@@ -56,11 +73,14 @@ async def run():
         print("-- Disarming")
         await drone.action.disarm()
         return
-
+    # print("fly high START")
+    # await drone.offboard.set_position_ned(PositionNedYaw(0, 0, -5, 0))
+    # await asyncio.sleep(5)
+    # print("fly high OVER")
     waypoints = []
 
-    # read csv data
-    csv_file = "roller_coaster_trajectory.csv"
+    # read the csv file
+    csv_file = "spiral_ascend_trajectory_fixed.csv"
     with open(csv_file, newline="") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -76,10 +96,13 @@ async def run():
                               float(row["az"]),
                               int(row["mode"])))
 
-    print("-- Executing Spiral Ascend trajectory")
+    print("-- Executing spiral ascend trajectory")
     total_duration = waypoints[-1][0]
     t = 0
     last_mode = 0
+
+    # 监听无人机实际位置
+    position_task = asyncio.create_task(log_position_velocity(drone))
 
     while t <= total_duration:
         current_waypoint = get_current_waypoint(waypoints, t)
@@ -103,7 +126,7 @@ async def run():
         await asyncio.sleep(time_step)
         t += time_step
 
-    print("-- Spiral Ascend trajectory completed")
+    print("-- spiral ascend trajectory completed")
 
     print("-- Landing")
     await drone.action.land()
@@ -120,6 +143,9 @@ async def run():
 
     print("-- Disarming")
     await drone.action.disarm()
+
+    # 停止记录位置信息
+    position_task.cancel()
 
 
 if __name__ == "__main__":
