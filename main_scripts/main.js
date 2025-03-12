@@ -73,7 +73,7 @@ Blockly.Themes.Halloween = Blockly.Theme.defineTheme('halloween', {
         },
     },
     'componentStyles': {
-        'workspaceBackgroundColour': '#ffffff',          // Light beige-gray for a warm, neutral workspace #ffffff '#EFF0EA'
+        'workspaceBackgroundColour': '#EFF0EA',          // Light beige-gray for a warm, neutral workspace #ffffff '#EFF0EA'
         'toolboxBackgroundColour': '#C4BAB1',            // Soft brown-gray for the toolbox
         'toolboxForegroundColour': '#161D15',            // Darker muted brown for toolbox text
         'flyoutBackgroundColour': '#d6ccc2',             // Slightly lighter beige for the flyout background
@@ -110,12 +110,12 @@ function work() {
             drag: true,
             wheel: true
         },
-        // grid: {
-        //     spacing: 20,
-        //     length: 3,
-        //     colour: '#ccc',
-        //     snap: true
-        // }
+        grid: {
+            spacing: 20,
+            length: 3,
+            colour: '#ccc',
+            snap: true
+        }
     });
     fetchReadme();
     loadBlocksFromLocalStorage()

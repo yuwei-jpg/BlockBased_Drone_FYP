@@ -8,6 +8,7 @@ from mavsdk.offboard import (OffboardError, PositionNedYaw)
 
 from main_python.csv_generated import generate_s_shape_trajectory_csv
 from main_python.read_csv import execute_trajectory_other
+from movements.spiral_ascend_shape.sa_path import log_position_velocity
 
 
 async def run():
@@ -40,17 +41,37 @@ async def run():
             print("-- Global position estimate OK")
             break
 
-        # 这里是生成的代码
+    position_task = asyncio.create_task(log_position_velocity(drone))
+
+    # 这里是生成的代码
     await drone.action.arm()
-    await drone.offboard.set_position_ned(PositionNedYaw(0,0,0,0))
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 0, 0, 0),
+                                                   VelocityNedYaw(0, 0, 0, 0))
     await drone.offboard.start()
-    await drone.offboard.set_position_ned(PositionNedYaw(0,0,-10,90))
-    await asyncio.sleep(10)
-    generate_s_shape_trajectory_csv()
-    await execute_trajectory_other("s_shape_trajectory.csv", drone)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 0, -5, 0),
+                                                   VelocityNedYaw(1.5, 1.5, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 10, -5, 0),
+                                                   VelocityNedYaw(0.76, 0.76, 0, 0))
+    await asyncio.sleep(0.2)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 10, -5, 0),
+                                                   VelocityNedYaw(-0.76, 0.76, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 20, -5, 0),
+                                                   VelocityNedYaw(-0.76, 0.76, 0, 0))
+    await asyncio.sleep(0.2)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 20, -5, 0),
+                                                   VelocityNedYaw(0.76, 0.76, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 30, -5, 0),
+                                                   VelocityNedYaw(1.52, 1.52, 0, 0))
+    await asyncio.sleep(5)
     await drone.offboard.stop()
     await drone.action.land()
-      # 确保所有行都只有 4 个空格缩进
+
+    position_task.cancel()
+
+    # 确保所有行都只有 4 个空格缩进
 
 # 执行 run 函数
 asyncio.run(run())
