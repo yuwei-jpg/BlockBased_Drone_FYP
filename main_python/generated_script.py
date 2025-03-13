@@ -43,18 +43,29 @@ async def run():
     position_task = asyncio.create_task(log_position_velocity(drone))
 
     # 这里是生成的代码
-
-    speed = float(3)
     await drone.action.arm()
-    await drone.action.set_takeoff_altitude(10)
-    await drone.action.takeoff()
-    await asyncio.sleep(10)
-    await drone.action.set_current_speed(speed)
-    await drone.action.goto_location(180, 90, 10, 0)
-    await asyncio.sleep(10)
-    await drone.action.set_return_to_launch_altitude(10)
-    await drone.action.return_to_launch()
-    await asyncio.sleep(15)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 0, 0, 0),
+                                                   VelocityNedYaw(0, 0, 0, 0))
+    await drone.offboard.start()
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 0, -5, 0),
+                                                   VelocityNedYaw(1.5, 1.5, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 10, -5, 0),
+                                                   VelocityNedYaw(0.76, 0.76, 0, 0))
+    await asyncio.sleep(0.2)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 10, -5, 0),
+                                                   VelocityNedYaw(-0.76, 0.76, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 20, -5, 0),
+                                                   VelocityNedYaw(-0.76, 0.76, 0, 0))
+    await asyncio.sleep(0.2)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 20, -5, 0),
+                                                   VelocityNedYaw(0.76, 0.76, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 30, -5, 0),
+                                                   VelocityNedYaw(1.52, 1.52, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.stop()
     await drone.action.land()
 
     position_task.cancel()
@@ -64,29 +75,3 @@ async def run():
 
 # 执行 run 函数
 asyncio.run(run())
-
-#
-# await drone.action.arm()
-# await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 0, 0, 0),
-#                                                VelocityNedYaw(0, 0, 0, 0))
-# await drone.offboard.start()
-# await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 0, -5, 0),
-#                                                VelocityNedYaw(1.5, 1.5, 0, 0))
-# await asyncio.sleep(5)
-# await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 10, -5, 0),
-#                                                VelocityNedYaw(0.76, 0.76, 0, 0))
-# await asyncio.sleep(0.2)
-# await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 10, -5, 0),
-#                                                VelocityNedYaw(-0.76, 0.76, 0, 0))
-# await asyncio.sleep(5)
-# await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 20, -5, 0),
-#                                                VelocityNedYaw(-0.76, 0.76, 0, 0))
-# await asyncio.sleep(0.2)
-# await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 20, -5, 0),
-#                                                VelocityNedYaw(0.76, 0.76, 0, 0))
-# await asyncio.sleep(5)
-# await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 30, -5, 0),
-#                                                VelocityNedYaw(1.52, 1.52, 0, 0))
-# await asyncio.sleep(5)
-# await drone.offboard.stop()
-# await drone.action.land()
