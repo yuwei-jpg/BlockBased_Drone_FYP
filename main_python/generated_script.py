@@ -71,6 +71,30 @@ async def run():
     position_task.cancel()
 
     # 确保所有行都只有 4 个空格缩进
+    await drone.action.arm()
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 0, 0, 0),
+                                                   VelocityNedYaw(0, 0, 0, 0))
+    await drone.offboard.start()
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 0, -5, 0),
+                                                   VelocityNedYaw(1.5, 1.5, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 10, -5, 0),
+                                                   VelocityNedYaw(0.76, 0.76, 0, 0))
+    await asyncio.sleep(0.2)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 10, -5, 0),
+                                                   VelocityNedYaw(-0.76, 0.76, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 20, -5, 0),
+                                                   VelocityNedYaw(-0.76, 0.76, 0, 0))
+    await asyncio.sleep(0.2)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(0, 20, -5, 0),
+                                                   VelocityNedYaw(0.76, 0.76, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.set_position_velocity_ned(PositionNedYaw(10, 30, -5, 0),
+                                                   VelocityNedYaw(1.52, 1.52, 0, 0))
+    await asyncio.sleep(5)
+    await drone.offboard.stop()
+    await drone.action.land()
 
 
 # 执行 run 函数
