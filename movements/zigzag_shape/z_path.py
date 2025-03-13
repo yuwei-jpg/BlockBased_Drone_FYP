@@ -10,7 +10,7 @@ def get_current_waypoint(waypoints, time):
     return next((wp for wp in waypoints if time <= wp[0]), None)
 
 
-async def log_position_velocity(drone, filename="mavsdk_position_velocity.csv"):
+async def log_position_velocity(drone, filename="mavsdk_position_velocity3.csv"):
     """ 监听 MAVSDK 的 PositionVelocityNed 数据并存入 CSV 文件 """
     file_path = f"{filename}"
 
