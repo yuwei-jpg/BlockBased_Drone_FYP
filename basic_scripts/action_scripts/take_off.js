@@ -128,7 +128,7 @@ Blockly.defineBlocksWithJsonArray([
   "type": "go_to_location",
   "tooltip": "",
   "helpUrl": "longitude 180 latitudes 90 means go to north",
-  "message0": "Go to location %1 longitude:  %2 d %3 latitudes: %4 d %5 altitude: %6 m %7 ",
+  "message0": "Go to location %1 forward:  %2 m %3 turn right: %4 m %5 go up: %6 m %7 ",
   "args0": [
     {
       "type": "input_dummy",
@@ -137,7 +137,7 @@ Blockly.defineBlocksWithJsonArray([
     {
       "type": "field_number",
       "name": "longitude",
-      "value": 180,
+      "value": 0,
       "precision": 0.001
     },
     {
@@ -147,7 +147,7 @@ Blockly.defineBlocksWithJsonArray([
     {
       "type": "field_number",
       "name": "latitude",
-      "value": 90,
+      "value": 0,
       "precision": 0.001
     },
     {

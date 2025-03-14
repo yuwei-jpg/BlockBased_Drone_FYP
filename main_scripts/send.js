@@ -525,10 +525,11 @@ await drone.action.do_orbit(${radius2},${speed}, OrbitYawBehavior.HOLD_INITIAL_H
 
 
         module.pythonGenerator.forBlock['go_to_location'] = function (block) {
-            const longitudes = block.getFieldValue("longitude");
-            const latitudes = block.getFieldValue("latitude");
-            const altitudes = block.getFieldValue("altitude");
-            return `await drone.action.goto_location(${longitudes},${latitudes},${altitudes},0)\n`;
+            const forward = block.getFieldValue("longitude");
+            const right = block.getFieldValue("latitude");
+            const up = block.getFieldValue("altitude");
+            return `await move_relative(drone, ${forward}, ${right}, ${up})\n`;
+            // return `await drone.action.goto_location(${longitudes},${latitudes},${altitudes},0)\n`;
         }
 
         module.pythonGenerator.forBlock['setCurrentSpeed'] = function (block) {
