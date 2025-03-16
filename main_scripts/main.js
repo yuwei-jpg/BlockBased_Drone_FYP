@@ -73,7 +73,7 @@ Blockly.Themes.Halloween = Blockly.Theme.defineTheme('halloween', {
         },
     },
     'componentStyles': {
-        'workspaceBackgroundColour': '#ffffff',          // Light beige-gray for a warm, neutral workspace #ffffff '#EFF0EA'
+        'workspaceBackgroundColour': '#EFF0EA',          // Light beige-gray for a warm, neutral workspace #ffffff '#EFF0EA'
         'toolboxBackgroundColour': '#C4BAB1',            // Soft brown-gray for the toolbox
         'toolboxForegroundColour': '#161D15',            // Darker muted brown for toolbox text
         'flyoutBackgroundColour': '#d6ccc2',             // Slightly lighter beige for the flyout background
@@ -95,7 +95,7 @@ function work() {
     workspace = Blockly.inject('blocklyDiv', {
         toolbox: document.getElementById('toolbox'),
         theme: Blockly.Themes.Halloween,
-        maxTrashcanContents: 20,  // 设置垃圾桶最大容量
+        maxTrashcanContents: 20,
         zoom: {
             controls: true,
             wheel: true,
@@ -110,12 +110,12 @@ function work() {
             drag: true,
             wheel: true
         },
-        // grid: {
-        //     spacing: 20,
-        //     length: 3,
-        //     colour: '#ccc',
-        //     snap: true
-        // }
+        grid: {
+            spacing: 20,
+            length: 3,
+            colour: '#ccc',
+            snap: true
+        }
     });
     fetchReadme();
     loadBlocksFromLocalStorage()
@@ -123,7 +123,7 @@ function work() {
     document.querySelector('.tab button.active').click();
     Blockly.svgResize(workspace);
 
-    //  // 更新 Toolbox，确保 Example 类别生效
+    //  // Update Toolbox to ensure that the Example category is effective
     // const toolbox = document.getElementById("toolbox");
     // workspace.updateToolbox(toolbox);
 
@@ -137,12 +137,10 @@ function work() {
 
 /*--------------------------------------------------------------------------------------------------------*/
 
-// // 切换抽屉面板开合
 //     const toggleBtn = document.getElementById('toggleButton');
 //     toggleBtn.addEventListener('click', () => {
 //       const panel = document.getElementById('rightPanel');
 //       panel.classList.toggle('open');
-//       // 根据状态切换按钮图标或文字
 //       if (panel.classList.contains('open')) {
 //         toggleBtn.textContent = '>';
 //       } else {
@@ -154,7 +152,6 @@ function work() {
 // const panel = document.getElementById('rightPanel');
 // panel.classList.toggle('open');
 //
-// // 触发Blockly的resize事件
 // if (Blockly.getMainWorkspace()) {
 //     Blockly.getMainWorkspace().resize();
 // }
@@ -171,28 +168,22 @@ function work() {
 //     loadBlocksFromLocalStorage()
 // }
 function saveBlocksToLocalStorage() {
-    // 获取当前 `Workspace` 的 XML
     const workspaceXml = Blockly.Xml.workspaceToDom(workspace);
     const workspaceXmlText = Blockly.Xml.domToText(workspaceXml);
 
-    // **获取 `localStorage` 里已有的块**
     let existingBlocks = localStorage.getItem("savedExampleBlocks");
 
-    // **如果已有数据，则合并新块和旧块**
     if (existingBlocks) {
         const parser = new DOMParser();
         const existingXml = parser.parseFromString(existingBlocks, "text/xml");
 
-        // **将新块追加到已有的 XML**
         while (workspaceXml.firstChild) {
             existingXml.documentElement.appendChild(workspaceXml.firstChild);
         }
 
-        // **转换回字符串**
         const updatedXmlText = new XMLSerializer().serializeToString(existingXml);
         localStorage.setItem("savedExampleBlocks", updatedXmlText);
     } else {
-        // **如果 `localStorage` 为空，直接存入**
         localStorage.setItem("savedExampleBlocks", workspaceXmlText);
     }
 
@@ -214,13 +205,12 @@ function loadBlocksFromLocalStorage() {
         return;
     }
 
-    // **解析 XML 并去掉 `<xml>` 标签**
     let parser = new DOMParser();
     let xmlDoc = parser.parseFromString(savedBlocks, "text/xml");
 
     let xmlElement = xmlDoc.documentElement;
     if (xmlElement.nodeName === "xml") {
-        xmlElement = xmlElement.firstElementChild; // 取出真正的 <block> 结构
+        xmlElement = xmlElement.firstElementChild;
     }
 
     while (xmlElement) {
@@ -230,7 +220,6 @@ function loadBlocksFromLocalStorage() {
 
     console.log("Blocks restored to Example category in Toolbox!");
 
-    // **刷新 Toolbox**
     workspace.updateToolbox(toolbox);
 }
 
@@ -241,35 +230,29 @@ function deleteBlockFromLocalStorage(blockType) {
         return;
     }
 
-    // **解析 `localStorage` 里的 XML**
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(savedXmlText, "text/xml");
 
-    // **查找指定类型的块**
     const blocks = xmlDoc.getElementsByTagName("block");
     for (let i = blocks.length - 1; i >= 0; i--) {
         if (blocks[i].getAttribute("type") === blockType) {
-            blocks[i].parentNode.removeChild(blocks[i]); // **删除主块**
+            blocks[i].parentNode.removeChild(blocks[i]); //
         }
     }
 
-    // **存回 `localStorage`**
     const updatedXmlText = new XMLSerializer().serializeToString(xmlDoc);
     localStorage.setItem("savedExampleBlocks", updatedXmlText);
     console.log(`Blocks of type "${blockType}" and its children have been deleted!`);
 
-    // **刷新 Blockly**
     loadBlocksFromLocalStorage();
 }
 
 function clearSavedBlocks() {
-    localStorage.removeItem("savedExampleBlocks"); // 清空 localStorage
+    localStorage.removeItem("savedExampleBlocks");
     console.log("All saved blocks have been deleted!");
 
-    // **清空 Blockly 工作区**
     workspace.clear();
 
-    // **刷新 Toolbox**
     workspace.updateToolbox(document.getElementById("toolbox"));
 }
 
@@ -336,36 +319,30 @@ function fetchReadme() {
 // // Set the default open tab
 // document.getElementById("defaultOpen").click();
 
-// 添加窗口大小改变事件监听
 window.addEventListener('resize', function () {
     if (workspace) {
         Blockly.svgResize(workspace);
     }
 });
 /*--------------------------------------------------------------------------------------------------------*/
-// 初始化时设置工作区大小
-// 确保在 DOM 加载完成后初始化
+
 document.addEventListener('DOMContentLoaded', function () {
     work();
-    // 自定义右键菜单
     Blockly.ContextMenuRegistry.registry.register({
         id: "save_block",
-        weight: 100, // 确保权重高于默认菜单项
-        scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK, // 作用域为块
-        displayText: "Save this block", // 菜单项的显示文本
+        weight: 100,
+        scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+        displayText: "Save this block",
         preconditionFn: function (scope) {
-            return "enabled"; // 预条件函数，返回菜单项是否可用
+            return "enabled";
         },
         callback: function (scope) {
-            let block = scope.block; // 获取当前块
-            let blockXml = Blockly.Xml.blockToDom(block); // 将块转换为 XML
-            let blockText = Blockly.Xml.domToText(blockXml); // 将 XML 转换为文本
-
-            // 从 localStorage 获取已有的块
+            let block = scope.block;
+            let blockXml = Blockly.Xml.blockToDom(block);
+            let blockText = Blockly.Xml.domToText(blockXml);
             let savedBlocks = localStorage.getItem("savedExampleBlocks") || "";
-            // 将新块追加到 localStorage
             localStorage.setItem("savedExampleBlocks", savedBlocks + blockText);
-            console.log("Block saved!"); // 打印保存成功的消息
+            console.log("Block saved!");
         }
     });
 });
@@ -373,7 +350,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /*--------------------------------------------------------------------------------------------------------*/
 
-// 工具函数：生成等间隔数组
 function linspace(start, stop, num) {
     const arr = [];
     const step = (stop - start) / (num - 1);
@@ -383,7 +359,6 @@ function linspace(start, stop, num) {
     return arr;
 }
 
-// 构造 CSV 字符串（包含表头）
 function buildCSV(t_values, px_values, py_values, pz_values) {
     const total_points = t_values.length;
     const vx = new Array(total_points).fill(0);
@@ -413,7 +388,6 @@ function buildCSV(t_values, px_values, py_values, pz_values) {
     return csvContent;
 }
 
-// 生成各种图形的数据函数（返回 CSV 字符串以及 x,y 坐标数据，用于预览）
 function generateZShapeData() {
     const z_length = 20, z_width = 10, num_segments = 3, points_per_segment = 50;
     const total_points = num_segments * points_per_segment;
@@ -511,13 +485,11 @@ function generateTriangleData() {
 }
 
 
-// 绘制并启动无人机沿轨迹移动动画（不预绘制静态轨迹）
 function drawCSVShape(xArray, yArray) {
   const canvas = document.getElementById('csvPreviewCanvas');
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 计算数据范围及转换参数
   const minX = Math.min(...xArray);
   const maxX = Math.max(...xArray);
   const minY = Math.min(...yArray);
@@ -527,7 +499,6 @@ function drawCSVShape(xArray, yArray) {
   const scaleY = (canvas.height - 2 * padding) / (maxY - minY);
   const scale = Math.min(scaleX, scaleY);
 
-  // 定义转换函数，将原始坐标映射到 Canvas 坐标系
   function transformX(x) {
     return padding + (x - minX) * scale;
   }
@@ -535,7 +506,6 @@ function drawCSVShape(xArray, yArray) {
     return canvas.height - padding - (y - minY) * scale;
   }
 
-  // 不再绘制完整的静态轨迹（静态代码已注释）
   /*
   ctx.beginPath();
   ctx.lineWidth = 2;
@@ -547,22 +517,18 @@ function drawCSVShape(xArray, yArray) {
   ctx.stroke();
   */
 
-  // 构造转换后的点数组，供动画使用
   const transformedPoints = xArray.map((x, i) => {
     return { x: transformX(x), y: transformY(yArray[i]) };
   });
 
-  // 启动动画：无人机沿轨迹移动，逐步绘制“尾迹”
   animateDroneMovement(transformedPoints);
 }
 
 
-// 动画函数：让无人机图片沿着给定点数组运动，并实时绘制“尾迹”
 function animateDroneMovement(points) {
   let currentPointIndex = 0;
-  let drawnPoints = []; // 存储已“走过”的点
+  let drawnPoints = [];
 
-  // 获取或创建用于显示无人机运动轨迹的 SVG polyline
   let svg = document.getElementById('droneSVG');
   if (!svg) {
     svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -572,7 +538,6 @@ function animateDroneMovement(points) {
     svg.style.top = "0";
     svg.style.width = "100%";
     svg.style.height = "100%";
-    // 将 SVG 添加到 csvPreviewContainer 中（要求其父容器为 relative 定位）
     document.getElementById('csvPreviewContainer').appendChild(svg);
   }
   let polyline = document.getElementById('droneTrail');
@@ -585,38 +550,30 @@ function animateDroneMovement(points) {
     svg.appendChild(polyline);
   }
 
-  // 获取或创建无人机图片元素（绝对定位）
   let droneImage = document.getElementById('droneImage');
   if (!droneImage) {
     droneImage = document.createElement('img');
     droneImage.setAttribute("id", "droneImage");
-    // 请确保图片路径正确，建议使用相对路径，例如 "drone.png"
     droneImage.src = "drone.png";
     droneImage.style.position = "absolute";
     droneImage.style.width = "50px";
     droneImage.style.height = "50px";
-    // 初始时隐藏无人机图片
     droneImage.style.opacity = "0";
     document.getElementById('csvPreviewContainer').appendChild(droneImage);
   }
 
-  // 开始动画：每隔 1000 毫秒更新一次位置
   const drawInterval = setInterval(() => {
     if (currentPointIndex < points.length) {
       const currentPoint = points[currentPointIndex];
 
-      // 如果是第一帧，则显示无人机
       if (currentPointIndex === 0) {
         droneImage.style.opacity = "1";
       }
 
-      // 移动无人机图片：调整位置使图片居中于当前点
       droneImage.style.left = `${currentPoint.x - 25}px`;
       droneImage.style.top = `${currentPoint.y - 25}px`;
-      // 设置过渡动画，使移动平滑
       droneImage.style.transition = "all 1s ease";
 
-      // 延迟 500 毫秒后更新尾迹（与无人机移动略有间隔）
       setTimeout(() => {
         drawnPoints.push(currentPoint);
         const pointsStr = drawnPoints.map(p => `${p.x},${p.y}`).join(" ");

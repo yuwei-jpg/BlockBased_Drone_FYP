@@ -7,7 +7,7 @@ Blockly.defineBlocksWithJsonArray([
                 "type": "field_number",
                 "name": "TARGET_ALTITUDE",
                 "value": 10,
-                "min": 1,  // 设置最小值，防止无效输入
+                "min": 1,
                 "precision": 1
             }
         ],

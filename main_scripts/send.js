@@ -6,7 +6,6 @@ const {block} = require("blockly/core/tooltip");
 let serverProcess = null;
 let simulatorProcess = null;
 
-// // 运行 server.js 和模拟器
 // async function runServer() {
 //     if (serverProcess) {
 //         console.log("Server is already running!");
@@ -15,11 +14,11 @@ let simulatorProcess = null;
 //
 //     console.log("Starting server.js...");
 //     serverProcess = spawn("node", ["server.js"], {
-//         detached: true, // 让进程在后台运行
+//         detached: true,
 //         stdio: "ignore"
 //     });
 //
-//     serverProcess.unref(); // 让进程独立于当前脚本运行
+//     serverProcess.unref();
 //
 //     console.log("Server started successfully.");
 //
@@ -33,11 +32,11 @@ let simulatorProcess = null;
 //     console.log("Simulator started successfully.");
 // }
 //
-// // 终止 `server.js` 和模拟器
+
 // function stopServer() {
 //     if (serverProcess) {
 //         console.log("Stopping server.js...");
-//         serverProcess.kill(); // 杀死进程
+//         serverProcess.kill();
 //         serverProcess = null;
 //     }
 //
@@ -54,10 +53,8 @@ let simulatorProcess = null;
 
 async function runCode() {
     try {
-        // 首先启动模拟器
         showNotification('Starting emulator...', 'info');
 
-        // 检查是否已经有模拟器在运行
         const simResponse = await fetch("http://localhost:3000/run_simulator", {
             method: "POST"
         });
@@ -67,10 +64,8 @@ async function runCode() {
             throw new Error(errorData.message || 'Simulator startup failed');
         }
 
-        // 等待模拟器就绪
         showNotification('Waiting for simulator to be ready...', 'info');
-        
-        // 轮询检查模拟器状态
+
         while (true) {
             const statusResponse = await fetch("http://localhost:3000/simulator_status");
             const statusData = await statusResponse.json();
@@ -78,24 +73,21 @@ async function runCode() {
             if (statusData.status === "ready") {
                 break;
             }
-            
-            // 每秒检查一次
+
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
 
         showNotification('Simulator ready, executing code...', 'success');
 
-        // 如果没有生成代码，先生成
         if (!generatedCode) {
             generatedCode = await generateCode();
         }
-        console.log("Generated code:", generatedCode); // 调试日志
+        console.log("Generated code:", generatedCode);
 
         if (!generatedCode || generatedCode.trim() === '') {
             throw new Error('No code generated from blocks');
         }
 
-        // 发送代码到 MAVSDK
         const mavsdkResponse = await fetch("http://localhost:3000/run_MAVSDK", {
             method: "POST",
             headers: {
@@ -106,14 +98,14 @@ async function runCode() {
 
         if (!mavsdkResponse.ok) {
             const errorData = await mavsdkResponse.json();
-            throw new Error(errorData.message || '代码执行失败');
+            throw new Error(errorData.message || 'Code execution failed');
         }
 
-        showNotification('代码开始执行', 'success');
+        showNotification('Code starts executing', 'success');
         monitorExecution();
 
     } catch (error) {
-        console.error('执行错误:', error);
+        console.error('Execution Error:', error);
         showNotification(error.message, 'error');
     }
 }
@@ -141,22 +133,18 @@ function monitorExecution() {
         if (currentIndex < blocks.length) {
             const block = blocks[currentIndex];
 
-            // 高亮当前块
             block.setColour("#ffcc00");
 
-            // 滚动到当前块
             workspace.centerOnBlock(block.id);
 
-            // 500ms 后恢复颜色
             setTimeout(() => {
                 block.setColour(block.originalColour || null);
                 currentIndex++;
                 highlightNextBlock();
-            }, 1000); // 调整时间以匹配实际执行时间
+            }, 1000);
         }
     }
 
-    // 保存原始颜色
     blocks.forEach(block => {
         block.originalColour = block.getColour();
     });
@@ -166,13 +154,11 @@ function monitorExecution() {
 
 /*--------------------------------------------------------------------------------------------------------*/
 
-// 点击“Copy”按钮后，复制内容到剪贴板
 function copyCode() {
     const content = document.getElementById('modalContent').innerText;
     // 调用 Clipboard API
     navigator.clipboard.writeText(content)
         .then(() => {
-            // 复制成功后，您可以弹个提示，也可以不弹
             alert('Copied to clipboard!');
         })
         .catch(err => {
@@ -194,18 +180,18 @@ async function generateCode(event) {
         module.pythonGenerator.ORDER_LOGICAL = 7;
         module.pythonGenerator.nameDB_ = new Blockly.Names('VARIABLE');
         // module.pythonGenerator.nameDB_ = new Blockly.Names(Blockly.Names.DEVELOPER_VARIABLE_TYPE);
-        module.pythonGenerator.nameDB_.variablePrefix = ''; // 移除变量前缀
+        module.pythonGenerator.nameDB_.variablePrefix = '';
 
         function getAllStatements(block) {
-            let code = ''; // 用于存储所有生成的代码
+            let code = '';
             while (block) {
-                const blockCode = module.pythonGenerator.blockToCode(block); // 生成当前 Block 的代码
+                const blockCode = module.pythonGenerator.blockToCode(block);
                 if (Array.isArray(blockCode)) {
-                    code += blockCode[0]; // 如果是数组，取第一项（代码部分）
+                    code += blockCode[0];
                 } else {
-                    code += blockCode; // 否则直接拼接代码
+                    code += blockCode;
                 }
-                block = block.getNextBlock(); // 获取下一个连接的 Block
+                block = block.getNextBlock();
             }
             return code; // return all spliced codes
         }
@@ -699,7 +685,7 @@ await drone.action.do_orbit(${radius2},${speed}, OrbitYawBehavior.HOLD_INITIAL_H
         // // send code to the back end
         // sendCodeToBackend(fullCode);
     } catch (error) {
-        console.error('模块导入失败:', error);
+        console.error('Module import failed:', error);
     }
 }
 

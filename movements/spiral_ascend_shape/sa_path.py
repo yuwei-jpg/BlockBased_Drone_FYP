@@ -9,14 +9,14 @@ from movements.roller_coaster_shape.rc_path import get_current_waypoint
 
 
 async def log_position_velocity(drone, filename="mavsdk_position_velocity.csv"):
-    """ 监听 MAVSDK 的 PositionVelocityNed 数据并存入 CSV 文件 """
+    """ Monitor the PositionVelocityNed data of MAVSDK and save it in a CSV file """
     file_path = f"{filename}"
 
     with open(file_path, mode="w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["timestamp", "north_m", "east_m", "down_m", "vx_m_s", "vy_m_s", "vz_m_s"])
         async for data in drone.telemetry.position_velocity_ned():
-            timestamp = asyncio.get_event_loop().time()  # 获取当前时间戳
+            timestamp = asyncio.get_event_loop().time()
             writer.writerow([
                 timestamp,
                 data.position.north_m, data.position.east_m, data.position.down_m,
@@ -101,7 +101,6 @@ async def run():
     t = 0
     last_mode = 0
 
-    # 监听无人机实际位置
     position_task = asyncio.create_task(log_position_velocity(drone))
 
     while t <= total_duration:
@@ -144,7 +143,6 @@ async def run():
     print("-- Disarming")
     await drone.action.disarm()
 
-    # 停止记录位置信息
     position_task.cancel()
 
 

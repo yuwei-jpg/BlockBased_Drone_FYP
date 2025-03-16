@@ -11,17 +11,14 @@ let simulatorProcess = null;
 let pythonProcess = null;
 let simulatorReady = false;
 
-// 添加根路由处理
 app.get("/", (req, res) => {
     res.send("MAVSDK Server is running! Use POST /run_MAVSDK to execute drone commands.");
 });
 
-// 添加 /run_MAVSDK 的 GET 处理以返回更友好的错误信息
 app.get("/run_MAVSDK", (req, res) => {
     res.status(405).send("Method Not Allowed. Please use POST request to execute drone commands.");
 });
 
-// 启动模拟器
 app.post("/run_simulator", (req, res) => {
     if (simulatorProcess) {
         return res.status(400).json({
@@ -37,12 +34,10 @@ app.post("/run_simulator", (req, res) => {
         shell: true
     });
 
-    // 监听模拟器输出
     simulatorProcess.stdout.on('data', (data) => {
         const output = data.toString();
         console.log(`Simulator output: ${output}`);
-        
-        // 检查是否准备好起飞
+
         if (output.includes("Ready for takeoff!")) {
             simulatorReady = true;
             res.json({
@@ -66,7 +61,6 @@ app.post("/run_simulator", (req, res) => {
         });
     });
 
-    // 设置超时，以防没有收到 Ready for takeoff 消息
     setTimeout(() => {
         if (!simulatorReady) {
             res.status(500).json({
@@ -74,10 +68,9 @@ app.post("/run_simulator", (req, res) => {
                 message: "Simulator startup timeout"
             });
         }
-    }, 30000); // 30秒超时
+    }, 30000);
 });
 
-// 添加检查模拟器状态的路由
 app.get("/simulator_status", (req, res) => {
     res.json({
         status: simulatorReady ? "ready" : "not_ready"
@@ -89,20 +82,17 @@ app.get("/simulator_view", (req, res) => {
     res.sendFile(join(__dirname, 'path/to/simulator.html'));
 });
 
-// 运行 MAVSDK 代码
 app.post("/run_MAVSDK", async (req, res) => {
     try {
-        console.log("Received request body:", req.body); // 添加调试日志
+        console.log("Received request body:", req.body);
         const { code } = req.body;
 
-        // 将代码写入文件
         const fs = require('fs');
         const path = require('path');
         const scriptPath = path.join(__dirname,'../main_python', 'generated_script.py');
-        const formattedCode = code.split('\n').map(line => '    ' + line).join('\n');  // 保持一致缩进
+        const formattedCode = code.split('\n').map(line => '    ' + line).join('\n');
 
 
-        // 生成的代码需要嵌入到 run() 函数中
         const fullScript = `
 import asyncio
 import csv
@@ -143,16 +133,15 @@ async def run():
             print("-- Global position estimate OK")
             break
 
-        # 这里是生成的代码
-${formattedCode}  # 确保所有行都只有 4 个空格缩进
+        # Here is generated code
+${formattedCode}  # Make sure all lines have only 4 spaces indented
 
-# 执行 run 函数
+# execute run() function
 asyncio.run(run())
 `;
 
         fs.writeFileSync(scriptPath, fullScript);
 
-        // 使用 subprocess 执行生成的 Python 脚本
         const { exec } = require('child_process');
         exec(`python ${scriptPath}`, (error, stdout, stderr) => {
             if (error) {
@@ -175,7 +164,6 @@ asyncio.run(run())
     }
 });
 
-// 清理进程的路由
 app.post("/cleanup", (req, res) => {
     if (simulatorProcess) {
         simulatorProcess.kill();
@@ -188,7 +176,6 @@ app.post("/cleanup", (req, res) => {
     res.json({ status: "success", message: "Cleanup completed" });
 });
 
-// 错误处理中间件
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({
@@ -198,8 +185,6 @@ app.use((err, req, res, next) => {
 });
 
 app.post("/start_server", (req, res) => {
-    // 启动服务器的逻辑
-    // 这里可以添加任何需要的初始化代码
     res.json({ status: "success", message: "Server is running" });
 });
 
@@ -208,7 +193,6 @@ app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
 
-// 确保在服务器关闭时清理所有进程
 process.on('SIGTERM', () => {
     if (simulatorProcess) simulatorProcess.kill();
     if (mavsdkProcess) mavsdkProcess.kill();

@@ -182,10 +182,8 @@ def generate_l_shape_trajectory_csv():
     t_values = np.linspace(0, duration, num_points)
 
     half_points = num_points // 2
-    # 第一段：水平运动，从 (0,0) 到 (30,0)
     px_first = np.linspace(0, 30, half_points)
     py_first = np.full(half_points, 0)
-    # 第二段：垂直运动，从 (30,0) 到 (30,30)
     px_second = np.full(num_points - half_points, 30)
     py_second = np.linspace(0, 30, num_points - half_points)
 

@@ -90,7 +90,7 @@ Blockly.defineBlocksWithJsonArray([
     {
       "type": "input_value",
       "name": "radius",
-      "check": "Number"  // 确保只接受数字类型
+      "check": "Number"
     },
     {
       "type": "input_end_row",

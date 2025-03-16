@@ -11,9 +11,9 @@ Blockly.defineBlocksWithJsonArray([
       "name": "LABEL"
     },
     {
-        "type": "input_value",  // 改为 input_value
+        "type": "input_value",
         "name": "SPEED",
-        "check": "Number"  // 确保只接受数字类型
+        "check": "Number"
     },
     {
       "type": "field_label_serializable",
@@ -37,7 +37,7 @@ Blockly.defineBlocksWithJsonArray([
     {
       "type": "input_value",
       "name": "maxSpeed",
-      "check": "Number"  // 确保只接受数字类型
+      "check": "Number"
     },
     {
       "type": "field_label_serializable",
@@ -84,7 +84,7 @@ Blockly.defineBlocksWithJsonArray([
     {
       "type": "input_value",
       "name": "Altitude",
-      "check": "Number"  // 确保只接受数字类型
+      "check": "Number"
     },
     {
       "type": "input_dummy",

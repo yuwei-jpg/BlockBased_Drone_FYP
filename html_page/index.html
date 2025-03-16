@@ -47,7 +47,7 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            /*overflow: hidden; !* 防止内部滚动 *!*/
+            /*overflow: hidden; */
             background-color: #C4BAB1; /* Morandi background */
             scrollbar-color: rgba(0, 0, 0, 0) transparent;
         }
@@ -69,8 +69,8 @@
             background-color: #C4BAB1; /* Neutral Morandi color */
             border-bottom: 2px solid #EFF0EA;
             align-items: center; /* Align items vertically */
-            /*gap: 10px;  !* 按钮之间的间距 *!*/
-            /*width: fit-content; !* 容器宽度适应内容 *!*/
+            /*gap: 10px;  */
+            /*width: fit-content; */
         }
 
         .tab button {
@@ -114,7 +114,7 @@
         #Playground {
             /*display: block; !* Playground is shown by default *!*/
             /*padding: 0;*/
-            height: calc(100vh - 50px); /* 减去标签页的高度 */
+            height: calc(100vh - 50px);
             width: 100%;
             /*overflow: hidden;*/
             position: relative;
@@ -139,17 +139,17 @@
             left: 0;
             right: 0;
             bottom: 0;
-            width: 100% !important; /* 覆盖内联样式 */
-            height: 100% !important; /* 覆盖内联样式 */
+            width: 100% !important;
+            height: 100% !important;
             flex: 1;
-            /*min-width: 0; !* 防止内容溢出 *!*/
+            /*min-width: 0; */
             /*transition: all 0.3s ease;*/
         }
 
         .tab {
             position: relative;
             z-index: 1;
-            height: 39px; /* 标签页高度 */
+            height: 39px;
             left: 0; /* Align with the page edge */
         }
 
@@ -263,51 +263,51 @@
 
         /* Dropdown container */
         .dropdown {
-            position: absolute; /* 或者使用 absolute */
-            top: 10px; /* 距离顶部的距离 */
-            right: 10px; /* 距离右侧的距离 */
-            z-index: 999; /* 确保在其他元素之上 */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 999;
         }
 
         /* Dropdown button */
         .dropbtn {
-            background-color: #C4BAB1; /* 绿色背景 */
-            color: white; /* 白色文字 */
-            padding: 10px; /* 内边距 */
-            font-size: 16px; /* 字体大小 */
-            border: none; /* 无边框 */
-            cursor: pointer; /* 鼠标指针 */
+            background-color: #C4BAB1;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
         }
 
         /* Dropdown content (hidden by default) */
         .dropdown-content {
-            display: none; /* 默认隐藏 */
-            position: absolute; /* 绝对定位 */
-            background-color: #f9f9f9; /* 背景色 */
-            min-width: 160px; /* 最小宽度 */
-            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2); /* 阴影效果 */
-            z-index: 1; /* 确保在其他元素之上 */
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+            z-index: 1;
         }
 
         /* Links inside the dropdown */
         .dropdown-content a {
-            color: black; /* 文字颜色 */
-            padding: 12px 16px; /* 内边距 */
-            text-decoration: none; /* 无下划线 */
-            display: block; /* 块级元素 */
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
         }
 
         /* Show the dropdown content on hover */
         .dropdown:hover .dropdown-content {
-            display: block; /* 显示下拉内容 */
+            display: block;
         }
 
         /* Change color of dropdown links on hover */
         .dropdown-content a:hover {
-            background-color: #f1f1f1; /* 悬停时的背景色 */
+            background-color: #f1f1f1;
         }
 
-        /* CSV File 页面的样式 */
+        /* CSV File Page Style */
         .csv-container {
             max-width: 500px;
             margin: 0 auto;

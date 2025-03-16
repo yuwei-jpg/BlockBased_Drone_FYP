@@ -11,7 +11,7 @@ def get_current_waypoint(waypoints, time):
 
 
 async def log_position_velocity(drone, filename="mavsdk_position_velocity3.csv"):
-    """ 监听 MAVSDK 的 PositionVelocityNed 数据并存入 CSV 文件 """
+    """ Monitor the PositionVelocityNed data of MAVSDK and save it in a CSV file """
     file_path = f"{filename}"
 
     with open(file_path, mode="w", newline="") as file:
@@ -29,11 +29,6 @@ async def log_position_velocity(drone, filename="mavsdk_position_velocity3.csv")
                 f"Vel: Vx:{data.velocity.north_m_s:.3f}, Vy:{data.velocity.east_m_s:.3f}, Vz:{data.velocity.down_m_s:.3f}")
 
     return file_path
-
-
-# async def log_real_position(drone): """ 实时打印 MAVSDK 反馈的无人机位置 """ async for position in drone.telemetry.position():
-# print( f"Real Position - Lat: {position.latitude:.6f}, Lon: {position.longitude:.6f},
-# Alt: {position.absolute_altitude:.2f}")
 
 
 async def run():
@@ -107,7 +102,6 @@ async def run():
     t = 0
     last_mode = 0
 
-    # 监听无人机实际位置
     position_task = asyncio.create_task(log_position_velocity(drone))
 
     while t <= total_duration:
@@ -150,7 +144,6 @@ async def run():
     print("-- Disarming")
     await drone.action.disarm()
 
-    # 停止记录位置信息
     position_task.cancel()
 
 

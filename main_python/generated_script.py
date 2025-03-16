@@ -43,7 +43,7 @@ async def run():
 
     position_task = asyncio.create_task(log_position_velocity(drone))
 
-    # 这里是生成的代码
+    # Here is the generated code
     speed = float(3)
     await drone.action.arm()
     await drone.action.set_takeoff_altitude(10)
@@ -58,8 +58,8 @@ async def run():
 
     position_task.cancel()
 
-    # 确保所有行都只有 4 个空格缩进
+    # Make sure all lines have only 4 spaces indented
 
 
-# 执行 run 函数
+# Execute run() function
 asyncio.run(run())
