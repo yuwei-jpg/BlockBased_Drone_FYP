@@ -295,6 +295,26 @@ function openTab(evt, tabName) {
 /*--------------------------------------------------------------------------------------------------------*/
 
 // Fetch README content from a local file (adjust a path if necessary)
+// function fetchReadme() {
+//     fetch('./README.md')
+//         .then((response) => {
+//             if (!response.ok) {
+//                 throw new Error(`HTTP error! Status: ${response.status}`);
+//             }
+//             return response.text(); // Convert file contents to text
+//         })
+//         .then((markdownText) => {
+//             const converter = new showdown.Converter(); // Initialize the Showdown converter
+//             // Convert to HTML
+//             document.getElementById('readmeContent').innerHTML = converter.makeHtml(markdownText);
+//         })
+//         .catch((error) => {
+//             console.error('Error fetching README.md:', error);
+//             document.getElementById('readmeContent').innerHTML =
+//                 '<h1>Failed to load README</h1>';
+//         });
+// }
+// Fetch and display README.md with syntax highlighting
 function fetchReadme() {
     fetch('./README.md')
         .then((response) => {
@@ -304,16 +324,32 @@ function fetchReadme() {
             return response.text(); // Convert file contents to text
         })
         .then((markdownText) => {
-            const converter = new showdown.Converter(); // Initialize the Showdown converter
-            // Convert to HTML
-            document.getElementById('readmeContent').innerHTML = converter.makeHtml(markdownText);
+            // Initialize Showdown.js converter
+            const converter = new showdown.Converter({
+                tables: true,         // Enable table support
+                ghCodeBlocks: true,   // GitHub-style code blocks
+                tasklists: true       // Support task lists
+            });
+
+            // Convert Markdown to HTML
+            const htmlContent = converter.makeHtml(markdownText);
+
+            // Inject converted HTML into the page
+            document.getElementById('readmeContent').innerHTML = htmlContent;
+
+            // Apply syntax highlighting to all code blocks
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
         })
         .catch((error) => {
             console.error('Error fetching README.md:', error);
-            document.getElementById('readmeContent').innerHTML =
-                '<h1>Failed to load README</h1>';
+            document.getElementById('readmeContent').innerHTML = '<h1>Failed to load README</h1>';
         });
 }
+
+// Run function when DOM is loaded
+document.addEventListener('DOMContentLoaded', fetchReadme);
 
 /*--------------------------------------------------------------------------------------------------------*/
 // // Set the default open tab
