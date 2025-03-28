@@ -4,6 +4,10 @@ const app = express();
 const cors = require('cors');
 const {join} = require("path");
 
+const fs = require("fs");
+const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
+config.px4_path = "./PX4-Autopilot";
+
 app.use(cors());
 app.use(express.json());
 
@@ -27,11 +31,12 @@ app.post("/run_simulator", (req, res) => {
         });
     }
 
-    const px4Path = "/Users/jiyuwei/PX4-Autopilot/";
-
+    const px4Path = config.px4_path;
+// "/Users/jiyuwei/PX4-Autopilot";
     simulatorProcess = spawn('make', ['px4_sitl', 'jmavsim'], {
         cwd: px4Path,
-        shell: true
+        shell: true,
+        env: process.env
     });
 
     simulatorProcess.stdout.on('data', (data) => {
@@ -100,8 +105,6 @@ from mavsdk import System
 from mavsdk.action import OrbitYawBehavior
 from mavsdk.offboard import VelocityNedYaw,VelocityBodyYawspeed,Attitude,AccelerationNed
 from mavsdk.offboard import (OffboardError, PositionNedYaw)
-from main_python.csv_generated import generate_s_shape_trajectory_csv
-from main_python.read_csv import execute_trajectory_other
 
 async def run():
     """ Does Offboard control using position NED coordinates. """

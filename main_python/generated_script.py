@@ -1,15 +1,10 @@
+
 import asyncio
 import csv
 from mavsdk import System
 from mavsdk.action import OrbitYawBehavior
-from mavsdk.offboard import VelocityNedYaw, VelocityBodyYawspeed, Attitude, AccelerationNed
+from mavsdk.offboard import VelocityNedYaw,VelocityBodyYawspeed,Attitude,AccelerationNed
 from mavsdk.offboard import (OffboardError, PositionNedYaw)
-
-from main_python.csv_generated import generate_s_shape_trajectory_csv
-from main_python.move_relatively import move_relative
-from main_python.read_csv import execute_trajectory_other
-from movements.spiral_ascend_shape.sa_path import log_position_velocity
-
 
 async def run():
     """ Does Offboard control using position NED coordinates. """
@@ -41,25 +36,33 @@ async def run():
             print("-- Global position estimate OK")
             break
 
-    position_task = asyncio.create_task(log_position_velocity(drone))
-
-    # Here is the generated code
+        # Here is generated code
+    radius = float(2)
     speed = float(3)
     await drone.action.arm()
-    await drone.action.set_takeoff_altitude(10)
+    await drone.action.set_takeoff_altitude(20)
     await drone.action.takeoff()
     await asyncio.sleep(10)
-    await drone.action.set_current_speed(speed)
-    await move_relative(drone, 5, 10, 5)
-    await drone.action.set_return_to_launch_altitude(10)
-    await drone.action.return_to_launch()
-    await asyncio.sleep(15)
+    
+    async for position1 in drone.telemetry.position():
+        if position1.relative_altitude_m >= 15:
+            
+            async for position in drone.telemetry.position():
+                latitude = position.latitude_deg
+                longitude = position.longitude_deg
+                altitude = position.absolute_altitude_m
+                break  
+            await drone.action.do_orbit(radius,speed, OrbitYawBehavior.HOLD_INITIAL_HEADING, latitude, longitude, altitude)
+            await asyncio.sleep(10)
+    
+            break
+        else:
+            await drone.action.return_to_launch()
+            await asyncio.sleep(10)
+    
+            break
     await drone.action.land()
+      # Make sure all lines have only 4 spaces indented
 
-    position_task.cancel()
-
-    # Make sure all lines have only 4 spaces indented
-
-
-# Execute run() function
+# execute run() function
 asyncio.run(run())
