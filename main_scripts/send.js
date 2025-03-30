@@ -473,7 +473,7 @@ ${module.pythonGenerator.prefixLines(statement2, "        ")}
             const east = block.getFieldValue('east');
             const down2 = block.getFieldValue('down2');
             return `await drone.offboard.set_position_velocity_acceleration_ned(PositionNedYaw(${front},${right},${down},${angle}),
-            VelocityNedYaw(${fronts},${rights},${downs},${angle}),AccelerationNed(${north},${east},${down2})\n`;
+            VelocityNedYaw(${fronts},${rights},${downs},${angle}),AccelerationNed(${north},${east},${down2}))\n`;
         }
 
 

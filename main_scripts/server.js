@@ -3,10 +3,10 @@ const { exec, spawn } = require("child_process");
 const app = express();
 const cors = require('cors');
 const {join} = require("path");
-
-const fs = require("fs");
-const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
-config.px4_path = "./PX4-Autopilot";
+app.use(express.static('html_page'));
+// const fs = require("fs");
+// const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
+// config.px4_path = "./PX4-Autopilot";
 
 app.use(cors());
 app.use(express.json());
@@ -31,12 +31,11 @@ app.post("/run_simulator", (req, res) => {
         });
     }
 
-    const px4Path = config.px4_path;
-// "/Users/jiyuwei/PX4-Autopilot";
+    const px4Path = "/Users/jiyuwei/PX4-Autopilot";
     simulatorProcess = spawn('make', ['px4_sitl', 'jmavsim'], {
         cwd: px4Path,
-        shell: true,
-        env: process.env
+        shell: true
+        // env: process.env
     });
 
     simulatorProcess.stdout.on('data', (data) => {
@@ -105,6 +104,17 @@ from mavsdk import System
 from mavsdk.action import OrbitYawBehavior
 from mavsdk.offboard import VelocityNedYaw,VelocityBodyYawspeed,Attitude,AccelerationNed
 from mavsdk.offboard import (OffboardError, PositionNedYaw)
+from csv_generated import generate_l_shape_trajectory_csv
+from csv_generated import generate_z_trajectory_csv
+from csv_generated import generate_circle_trajectory_csv
+from csv_generated import generate_spiral_ascend_trajectory_csv
+from csv_generated import generate_triangle_trajectory_csv
+from csv_generated import generate_roller_coaster_trajectory_csv
+from csv_generated import generate_s_shape_trajectory_csv
+from csv_generated import generate_square_trajectory_csv
+from read_csv import execute_trajectory_other
+from read_csv import execute_trajectory
+from move_relatively import move_relative
 
 async def run():
     """ Does Offboard control using position NED coordinates. """
@@ -201,3 +211,47 @@ process.on('SIGTERM', () => {
     if (mavsdkProcess) mavsdkProcess.kill();
     process.exit(0);
 });
+
+// process.on('exit', (code, signal) => {
+//     console.log(`Simulator exited with code ${code}, signal ${signal}`);
+//     simulatorProcess = null;
+//     simulatorReady = false;
+// });
+
+// const open = require('open');
+//
+// app.listen(3000, () => {
+//     console.log('Server running on http://localhost:3000');
+//     // import('open')
+//     // .then((open) => open.default('http://localhost:63342'))
+//     // .catch((err) => console.error("Failed to open browser:", err));
+//
+//     open('http://localhost:63342')
+//     .then(() => {
+//         console.log("Browser opened successfully");
+//     })
+//     .catch((err) => {
+//         console.error("Failed to open browser:", err);
+//     });
+//
+// });
+// const os = require('os');
+//
+// const url = 'http://localhost:3000';
+// // const url ="http://localhost:63342/FYP_Python/html_page/index.html?_ijt=8ajl8klhsthdnavi845sait0i9&_ij_reload=RELOAD_ON_SAVE#"
+// app.listen(PORT, () => {
+//     console.log(`Server running at ${url}`);
+//
+//     // macOS
+//     if (os.platform() === 'darwin') {
+//         exec(`open "${url}"`);
+//     }
+//     // Windows
+//     else if (os.platform() === 'win32') {
+//         exec(`start "" "${url}"`);
+//     }
+//     // Linux
+//     else if (os.platform() === 'linux') {
+//         exec(`xdg-open "${url}"`);
+//     }
+// });

@@ -3,9 +3,12 @@ import asyncio
 import csv
 from mavsdk import System
 from mavsdk.action import OrbitYawBehavior
-from mavsdk.offboard import VelocityNedYaw,VelocityBodyYawspeed,Attitude,AccelerationNed
+from mavsdk.offboard import VelocityNedYaw, VelocityBodyYawspeed, Attitude, AccelerationNed, AttitudeRate
 from mavsdk.offboard import (OffboardError, PositionNedYaw)
-
+from csv_generated import generate_l_shape_trajectory_csv
+from move_relatively import move_relative
+from read_csv import execute_trajectory_other
+from read_csv import execute_trajectory
 async def run():
     """ Does Offboard control using position NED coordinates. """
     mode_descriptions = {
@@ -37,32 +40,22 @@ async def run():
             break
 
         # Here is generated code
-    radius = float(2)
     speed = float(3)
     await drone.action.arm()
-    await drone.action.set_takeoff_altitude(20)
+    await drone.action.set_takeoff_altitude(10)
     await drone.action.takeoff()
     await asyncio.sleep(10)
-    
-    async for position1 in drone.telemetry.position():
-        if position1.relative_altitude_m >= 15:
-            
-            async for position in drone.telemetry.position():
-                latitude = position.latitude_deg
-                longitude = position.longitude_deg
-                altitude = position.absolute_altitude_m
-                break  
-            await drone.action.do_orbit(radius,speed, OrbitYawBehavior.HOLD_INITIAL_HEADING, latitude, longitude, altitude)
-            await asyncio.sleep(10)
-    
-            break
-        else:
-            await drone.action.return_to_launch()
-            await asyncio.sleep(10)
-    
-            break
+    await drone.action.set_current_speed(speed)
+    await move_relative(drone, 180, 90, 10)
+    await asyncio.sleep(10)
+    await drone.action.set_return_to_launch_altitude(10)
+    await drone.action.return_to_launch()
+    await asyncio.sleep(15)
     await drone.action.land()
-      # Make sure all lines have only 4 spaces indented
+    await drone.offboard.set_position_velocity_acceleration_ned(PositionNedYaw(2, 0, 0, null),
+                                                                VelocityNedYaw(3, 0, 0, null), AccelerationNed(4, 0, 0))
+
+    # Make sure all lines have only 4 spaces indented
 
 # execute run() function
 asyncio.run(run())
