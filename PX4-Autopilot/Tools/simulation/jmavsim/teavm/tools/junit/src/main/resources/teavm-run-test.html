@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TeaVM JUnit test</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+</head>
+<body>
+<script type="text/javascript" src="${SCRIPT}"></script>
+<script type="text/javascript">
+    main(["${IDENTIFIER}"], function(result) {
+        var message = result instanceof Error ? buildErrorMessage(result) : "OK";
+        var pre = document.createElement("pre");
+        document.body.appendChild(pre);
+        pre.appendChild(document.createTextNode(message));
+    });
+
+    function buildErrorMessage(e) {
+        var stack = "";
+        var je = main.javaException(e);
+        if (je && je.constructor.$meta) {
+            stack = je.constructor.$meta.name + ": ";
+            stack += je.getMessage() || "";
+            stack += "\n";
+        }
+        stack += e.stack;
+        return stack;
+    }
+</script>
+</body>
+</html>
