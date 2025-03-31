@@ -100,6 +100,7 @@ app.post("/run_MAVSDK", async (req, res) => {
         const fullScript = `
 import asyncio
 import csv
+import math
 from mavsdk import System
 from mavsdk.action import OrbitYawBehavior
 from mavsdk.offboard import VelocityNedYaw,VelocityBodyYawspeed,Attitude,AccelerationNed

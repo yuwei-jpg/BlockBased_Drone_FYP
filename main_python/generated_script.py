@@ -1,14 +1,24 @@
-
 import asyncio
 import csv
+import math
+
 from mavsdk import System
 from mavsdk.action import OrbitYawBehavior
-from mavsdk.offboard import VelocityNedYaw, VelocityBodyYawspeed, Attitude, AccelerationNed, AttitudeRate
+from mavsdk.offboard import VelocityNedYaw, VelocityBodyYawspeed, Attitude, AccelerationNed
 from mavsdk.offboard import (OffboardError, PositionNedYaw)
 from csv_generated import generate_l_shape_trajectory_csv
-from move_relatively import move_relative
+from csv_generated import generate_z_trajectory_csv
+from csv_generated import generate_circle_trajectory_csv
+from csv_generated import generate_spiral_ascend_trajectory_csv
+from csv_generated import generate_triangle_trajectory_csv
+from csv_generated import generate_roller_coaster_trajectory_csv
+from csv_generated import generate_s_shape_trajectory_csv
+from csv_generated import generate_square_trajectory_csv
 from read_csv import execute_trajectory_other
 from read_csv import execute_trajectory
+from move_relatively import move_relative
+
+
 async def run():
     """ Does Offboard control using position NED coordinates. """
     mode_descriptions = {
@@ -40,22 +50,15 @@ async def run():
             break
 
         # Here is generated code
-    speed = float(3)
     await drone.action.arm()
-    await drone.action.set_takeoff_altitude(10)
-    await drone.action.takeoff()
-    await asyncio.sleep(10)
-    await drone.action.set_current_speed(speed)
-    await move_relative(drone, 180, 90, 10)
-    await asyncio.sleep(10)
-    await drone.action.set_return_to_launch_altitude(10)
-    await drone.action.return_to_launch()
-    await asyncio.sleep(15)
+    await drone.offboard.set_position_ned(PositionNedYaw(0, 0, 0, 0))
+    await drone.offboard.start()
+    generate_roller_coaster_trajectory_csv()
+    await execute_trajectory("roller_coaster_trajectory.csv", 0, 0.1, drone)
+    await drone.offboard.stop()
     await drone.action.land()
-    await drone.offboard.set_position_velocity_acceleration_ned(PositionNedYaw(2, 0, 0, null),
-                                                                VelocityNedYaw(3, 0, 0, null), AccelerationNed(4, 0, 0))
-
     # Make sure all lines have only 4 spaces indented
+
 
 # execute run() function
 asyncio.run(run())

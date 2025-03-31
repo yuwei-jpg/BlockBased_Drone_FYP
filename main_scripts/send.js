@@ -223,15 +223,77 @@ async function generateCode(event) {
             return [code, module.pythonGenerator.ORDER_ATOMIC];
         }
 
+        // module.pythonGenerator.forBlock['math_single'] = function (block) {
+        //     const value = module.pythonGenerator.valueToCode(block, 'NUM', module.pythonGenerator.ORDER_NONE) || '0';
+        //     return [`math.sqrt(${value})`, module.pythonGenerator.ORDER_FUNCTION_CALL];
+        // }
         module.pythonGenerator.forBlock['math_single'] = function (block) {
-            const value = module.pythonGenerator.valueToCode(block, 'NUM', module.pythonGenerator.ORDER_NONE) || '0';
-            return [`math.sqrt(${value})`, module.pythonGenerator.ORDER_FUNCTION_CALL];
-        }
+            const operator = block.getFieldValue('OP'); // 获取操作类型
+            const arg = module.pythonGenerator.valueToCode(block, 'NUM', module.pythonGenerator.ORDER_NONE) || '0';
 
+            let code;
+            switch (operator) {
+                case 'ROOT': // square root
+                    code = `math.sqrt(${arg})`;
+                    break;
+                case 'ABS': // absolute
+                    code = `abs(${arg})`;
+                    break;
+                case 'NEG': // negative (-x)
+                    code = `-${arg}`;
+                    break;
+                case 'LN': // natural log
+                    code = `math.log(${arg})`;
+                    break;
+                case 'LOG10': // log base 10
+                    code = `math.log10(${arg})`;
+                    break;
+                case 'EXP': // e^x
+                    code = `math.exp(${arg})`;
+                    break;
+                case 'POW10': // 10^x
+                    code = `math.pow(10, ${arg})`;
+                    break;
+                default:
+                    code = arg;
+            }
+            return [code, module.pythonGenerator.ORDER_FUNCTION_CALL];
+        };
+
+
+        // module.pythonGenerator.forBlock['math_trig'] = function (block) {
+        //     const value = module.pythonGenerator.valueToCode(block, 'NUM', module.pythonGenerator.ORDER_NONE) || '0';
+        //     return [`math.sin(math.radians(${value}))`, module.pythonGenerator.ORDER_FUNCTION_CALL];
+        // }
         module.pythonGenerator.forBlock['math_trig'] = function (block) {
-            const value = module.pythonGenerator.valueToCode(block, 'NUM', module.pythonGenerator.ORDER_NONE) || '0';
-            return [`math.sin(math.radians(${value}))`, module.pythonGenerator.ORDER_FUNCTION_CALL];
-        }
+            const operator = block.getFieldValue('OP');
+            const arg = module.pythonGenerator.valueToCode(block, 'NUM', module.pythonGenerator.ORDER_NONE) || '0';
+            let code;
+
+            switch (operator) {
+                case 'SIN':
+                    code = `math.sin(math.radians(${arg}))`;
+                    break;
+                case 'COS':
+                    code = `math.cos(math.radians(${arg}))`;
+                    break;
+                case 'TAN':
+                    code = `math.tan(math.radians(${arg}))`;
+                    break;
+                case 'ASIN':
+                    code = `math.degrees(math.asin(${arg}))`;
+                    break;
+                case 'ACOS':
+                    code = `math.degrees(math.acos(${arg}))`;
+                    break;
+                case 'ATAN':
+                    code = `math.degrees(math.atan(${arg}))`;
+                    break;
+                default:
+                    code = arg;
+            }
+            return [code, module.pythonGenerator.ORDER_FUNCTION_CALL];
+        };
 
         module.pythonGenerator.forBlock['math_random_int'] = function (block) {
             const min = module.pythonGenerator.valueToCode(block, 'FROM', module.pythonGenerator.ORDER_NONE) || '0';
