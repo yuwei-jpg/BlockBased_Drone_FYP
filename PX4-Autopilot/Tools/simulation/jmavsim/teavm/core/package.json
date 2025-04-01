@@ -1,8 +1,0 @@
-{
-  "scripts": {
-    "uglify": "uglifyjs"
-  },
-  "devDependencies": {
-    "uglify-js": "3.19.3"
-  }
-}

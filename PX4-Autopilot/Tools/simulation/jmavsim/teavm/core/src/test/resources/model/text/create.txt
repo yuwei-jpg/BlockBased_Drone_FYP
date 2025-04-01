@@ -1,5 +1,0 @@
-$block
-    @a := new java.lang.String
-    @b := newArray `Ljava/lang/String;` [@size]
-    @c := newArray I [@h, @w]
-    return
