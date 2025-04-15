@@ -28,8 +28,8 @@ async def move_relative(drone, forward, right, up, yaw=0):
 
     new_alt = current_alt + up
 
-    print(f"移动前: {current_lat}, {current_lon}, {current_alt}")
-    print(f"移动后: {new_lat}, {new_lon}, {new_alt}")
+    print(f"Before moving: {current_lat}, {current_lon}, {current_alt}")
+    print(f"After moving: {new_lat}, {new_lon}, {new_alt}")
 
     await drone.action.goto_location(new_lat, new_lon, new_alt, yaw)
     await asyncio.sleep(10)

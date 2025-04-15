@@ -30,7 +30,7 @@ def generate_z_trajectory_csv():
 
     vx_values = np.gradient(px_values) / np.gradient(t_values)
     vy_values = np.gradient(py_values) / np.gradient(t_values)
-    vz_values = np.zeros(total_points)  # 高度不变
+    vz_values = np.zeros(total_points)
 
     yaw_values = np.zeros(total_points)
     mode_values = np.full(total_points, 70)
